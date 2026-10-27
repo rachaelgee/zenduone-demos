@@ -1,6 +1,20 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/shuttle",
+      "destination": "/zenbus-shuttle-prototype"
+    },
+    {
+      "source": "/waste",
+      "destination": "/zenduwork-waste-prototype"
+    },
+    {
+      "source": "/waste-simulation",
+      "destination": "/zenduwork-waste-simulation"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

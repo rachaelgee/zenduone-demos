@@ -869,6 +869,11 @@ body.touring #tourBtn{pointer-events:auto;position:relative;z-index:1010}
 .ic-trophy{--i:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M8%2021h8M12%2017v4M7%204h10v5a5%205%200%200%201-10%200z%22/%3E%3Cpath%20d=%22M17%205h3v2a3%203%200%200%201-3%203M7%205H4v2a3%203%200%200%200%203%203%22/%3E%3C/svg%3E")}
 .x-pill::before{content:""!important;width:11px;height:11px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M12%203l2%206%206%202-6%202-2%206-2-6-6-2%206-2z%22/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M12%203l2%206%206%202-6%202-2%206-2-6-6-2%206-2z%22/%3E%3C/svg%3E") center/contain no-repeat}
 .pk.done b::after{content:""!important;display:inline-block;width:.9em;height:.9em;margin-left:5px;vertical-align:-.1em;background:#039855;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M5%2012.5l4.5%204.5L19%207%22/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M5%2012.5l4.5%204.5L19%207%22/%3E%3C/svg%3E") center/contain no-repeat}
+#pausePill{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:1010;display:flex;align-items:center;gap:10px;background:#101828;color:#fff;border-radius:999px;padding:6px 6px 6px 16px;font:600 13px/1 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(16,24,40,.3)}
+#pausePill[hidden]{display:none}#pausePill>i{width:14px;height:14px}
+#ppGo{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#fff;color:#101828;font:600 13px/1 Inter,system-ui,sans-serif;padding:8px 14px;cursor:pointer}#ppGo i{width:14px;height:14px}
+.ch-row{display:flex;gap:8px;align-items:stretch}.ch-row .tm-cta{flex:1;width:auto}
+#chPause{width:46px;flex:none;border:1px solid #D0D5DD;background:#fff;color:#344054;border-radius:12px;display:grid;place-items:center;cursor:pointer}#chPause:hover{background:#F9FAFB}#chPause i{width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -1051,11 +1056,11 @@ body.touring #tourBtn{pointer-events:auto;position:relative;z-index:1010}
     <p class="tm-body" id="chBody"></p><div class="ch-po" id="chPO"></div><div class="tc-wave ch-wave" id="chWave" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="ch-recap" id="chRecap"></div>
     <div class="tm-chaps" id="chChaps"></div>
-    <button class="tm-cta" id="chGo">Start chapter →</button>
+    <div class="ch-row"><button id="chPause" aria-label="Pause"><i class=ic-pause></i></button><button class="tm-cta" id="chGo">Start chapter →</button></div>
     <div class="ch-bar"><i id="chBar"></i></div>
   </div>
 </div>
-<div class="t-cursor" id="tCursor" hidden><svg viewBox="0 0 28 28"><path d="M5 3l16 9.5-7 1.6 4.2 7.6-3.1 1.7-4.2-7.6L5.6 21z" fill="#101828" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="t-ripple" id="tRipple"></span></div>
+<div id="pausePill" hidden><i class=ic-pause></i> Tour paused <button id="ppGo"><i class=ic-play></i> Resume</button></div><div class="t-cursor" id="tCursor" hidden><svg viewBox="0 0 28 28"><path d="M5 3l16 9.5-7 1.6 4.2 7.6-3.1 1.7-4.2-7.6L5.6 21z" fill="#101828" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="t-ripple" id="tRipple"></span></div>
 <div class="x-ring" id="xRing" hidden></div>
 <div class="x-tip" id="xTip" hidden role="status" aria-live="polite">
   <div class="x-arrow" id="xArrow"></div>
@@ -1771,6 +1776,48 @@ $("#soundBtn").onclick=()=>{unlockVoice();setSound(!soundOn);if(soundOn&&S.phase
 document.querySelector(".stage").addEventListener("click",e=>{if(S.phase==="free"&&e.target.closest("button"))click()});
 
 render();$("#tWelcome").hidden=false;
+/* ---------- pause / resume (tour, chapter cards, voice-over, auto-play) ---------- */
+let PAUSED=false,pauseAt=0,voWasPlaying=false,AB=null;
+function runT(t){t.at=performance.now();t.id=setTimeout(()=>{timers=timers.filter(x=>x!==t);t.fn()},t.ms)}
+later=function(fn,ms){const t={fn,ms:ms||0,at:0,id:0};timers.push(t);if(PAUSED)t.left=t.ms;else runT(t);return t};
+clearTimers=function(){timers.forEach(t=>clearTimeout(t.id));timers=[];cancelAnimationFrame(ctaAnim);AB=null};
+autoBar=function(st){const cta=$("#tcCta");cta.classList.add("auto");cancelAnimationFrame(ctaAnim);AB={dur:estimate(st.vo||st.body),el:0,last:performance.now()};
+  const tick=n=>{if(!AB)return;if(!PAUSED)AB.el+=n-AB.last;AB.last=n;const f=Math.min(1,AB.el/AB.dur);cta.style.setProperty("--p",(f*100)+"%");if(f<1&&S.auto)ctaAnim=requestAnimationFrame(tick)};ctaAnim=requestAnimationFrame(tick)};
+function chBarFreeze(){const b=$("#chBar");if(!b||!b.parentElement)return;const tr=b.style.transition||"";const m=/width ([\d.]+)s/.exec(tr);if(!m)return;
+  const W=b.parentElement.getBoundingClientRect().width||1,f=Math.min(1,b.getBoundingClientRect().width/W);
+  const f0=(b._tr===tr)?(b._f0||0):0;const left=(1-f)*(+m[1])/Math.max(.001,1-f0);
+  b.style.transition="none";b.style.width=(f*100)+"%";b._resume={f,left}}
+function chBarResume(){const b=$("#chBar");if(!b||!b._resume)return;const r=b._resume;b._resume=null;void b.offsetWidth;
+  b.style.transition="width "+r.left.toFixed(2)+"s linear";b._tr=b.style.transition;b._f0=r.f;b.style.width="100%"}
+function pauseTour(){if(PAUSED)return;PAUSED=true;pauseAt=performance.now();
+  timers.forEach(t=>{clearTimeout(t.id);t.left=Math.max(0,t.ms-(pauseAt-t.at))});
+  voWasPlaying=!voEl.paused&&!voEl.ended;try{voEl.pause()}catch(e){}waves(false);chBarFreeze();
+  if(typeof SIM!=="undefined"){SIM._was=SIM.paused;SIM.paused=true;if(typeof simBar==="function")simBar()}
+  updatePlayBtn()}
+function resumeTour(){if(!PAUSED)return;PAUSED=false;
+  timers.forEach(t=>{t.ms=t.left;runT(t)});
+  if(voWasPlaying){voWasPlaying=false;const p=voEl.play();waves(true);if(p)p.catch(()=>waves(false))}
+  chBarResume();
+  if(typeof SIM!=="undefined"&&"_was" in SIM){SIM.paused=SIM._was;delete SIM._was;SIM.last=performance.now();if(typeof simBar==="function")simBar()}
+  updatePlayBtn()}
+function togglePause(){PAUSED?resumeTour():pauseTour()}
+const _upb=updatePlayBtn;
+updatePlayBtn=function(){_upb();const b=$("#tcPlay");
+  if(PAUSED){b.innerHTML="<i class=ic-play></i>";b.setAttribute("aria-label","Resume tour");b.title="Resume";$("#tcHint").textContent="Paused. Press play or the space bar to carry on."}
+  else if(S.auto){$("#tcHint").textContent="Playing automatically · pause anytime (space bar)"}
+  const c=$("#chPause");if(c){c.innerHTML=PAUSED?"<i class=ic-play></i>":"<i class=ic-pause></i>";c.title=PAUSED?"Resume":"Pause";c.setAttribute("aria-label",c.title)}
+  const p=$("#pausePill");if(p)p.hidden=!PAUSED};
+$("#tcPlay").onclick=()=>{if(PAUSED)resumeTour();else if(S.auto)pauseTour();else setAuto(true)};
+$("#chPause").onclick=togglePause;$("#ppGo").onclick=resumeTour;
+// any other control while paused carries on from there (clicking the highlighted item, Restart, Skip, Start chapter…)
+document.addEventListener("click",e=>{
+  if(e.target===tEl.block&&S.phase==="tour"&&S.auto){e.stopImmediatePropagation();if(!PAUSED)pauseTour();return}
+  if(!PAUSED)return;const b=e.target.closest("button");if(!b)return;
+  if(b.closest("#tcPlay,#chPause,#ppGo,#pausePill,#simBar"))return;resumeTour()},true);
+const isTourOn=()=>S.phase==="tour"||!$("#tChap").hidden||PAUSED||!voEl.paused;
+addEventListener("keydown",e=>{if(e.code!=="Space"&&e.key!==" ")return;const t=e.target;if(t.closest&&t.closest("input,textarea,select,[contenteditable]"))return;if(!isTourOn())return;e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)togglePause()},true);
+addEventListener("keyup",e=>{if((e.code==="Space"||e.key===" ")&&isTourOn()&&!(e.target.closest&&e.target.closest("input,textarea,select")))e.preventDefault()},true);
+updatePlayBtn();
 })();
 </script>
 </body>

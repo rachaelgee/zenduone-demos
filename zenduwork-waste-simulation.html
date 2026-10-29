@@ -1078,6 +1078,9 @@ html,body{background:#fff!important}
 .vp-vid{display:block;width:100%;border-radius:8px;margin:8px 0 4px;background:#000}
 .vp-vn{display:block;font-size:11.5px;color:#667085;margin-bottom:8px}
 .vp-im .camt{display:none}.vp-im .camt.r{display:block;top:4px;right:auto;left:4px}.vp-im .camai{font-size:9px;padding:2px 4px}
+.vp-wait{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:18px 14px;border:1px dashed #D0D5DD;border-radius:10px;background:#F9FAFB;color:#475467}
+.vp-wait i{width:22px;height:22px;color:#98A2B3}.vp-wait b{font-size:13px;color:#344054}.vp-wait small{font-size:12px;color:#667085;text-transform:none;letter-spacing:0}
+.vp-p.info{background:#EFF8FF;color:#175CD3}
 </style>
 </head>
 <body>
@@ -2051,13 +2054,24 @@ function camScene(seed,over){const s=hashN(String(seed));const sky=["#9CC3E6","#
    '<path d="M0 180L60 '+(110+arm)+'l40 6 20-40" fill="none" stroke="#5B6470" stroke-width="16" stroke-linecap="round"/><path d="M0 180L60 '+(110+arm)+'l40 6 20-40" fill="none" stroke="#7E8894" stroke-width="5"/>'+
    (over?'<rect x="140" y="42" width="72" height="112" fill="none" stroke="#F79009" stroke-width="3" stroke-dasharray="6 4" rx="3"/><rect x="140" y="26" width="92" height="17" rx="3" fill="#F79009"/><text x="186" y="38.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Inter,sans-serif">Overfill · 95%</text>':'')+
    '<text x="6" y="14" font-size="9" fill="#fff" font-family="monospace">GMT-03:00 · 4442</text><text x="6" y="172" font-size="9" fill="#fff" font-family="monospace">26/10/2026</text><text x="314" y="172" text-anchor="end" font-size="9" fill="#fff" font-family="monospace">-23.56S -46.66W</text></svg>'}
-function vpHTML(){const v=S.vp;if(!v)return"";const c=CUST.find(x=>x.id===v.cid);const vis=visits(c).find(x=>x.key===v.key)||visits(c)[0];const o=S.outc[vis.key]??vis.o;const pl=PILL[o];const over=o===1;
+function vpHTML(){const v=S.vp;if(!v)return"";const c=CUST.find(x=>x.id===v.cid);
+  if(/\|pending$/.test(v.key)){if(todayVisit(c))v.key=c.id+"|today";else return vpPending(c,v)}const vis=visits(c).find(x=>x.key===v.key)||visits(c)[0];const o=S.outc[vis.key]??vis.o;const pl=PILL[o];const over=o===1;
   let h='<div class="vp-h"><span class="vp-n">'+(c.stop||"—")+'</span><div><b>'+c.id+'</b><small>· '+c.name+'</small><small>· '+vis.date+' · '+c.type+' · <span class="vp-tag">Waste</span></small>'+(v.from==="live"?'<button class="vp-l" data-vcust="'+c.id+'"><i class=ic-clock></i> View customer history</button>':'<button class="vp-l" data-vroute="'+c.route+'"><i class=ic-layers></i> View route</button>')+'</div><button class="vp-x" data-vclose aria-label="Close"><i class=ic-x></i></button></div><div class="vp-b">';
   h+='<div class="vp-s"><small>Address</small><b>'+c.loc+'</b></div><div class="vp-s"><small>CAMERA CAPTURE</small>'+camScene(vis.key,over)+'</div>';
   h+='<div class="vp-s"><small>OUTCOME</small><div class="vp-o"><span class="vp-p '+pl[0]+'">● '+pl[1]+'</span><select id="vpOut" data-key="'+vis.key+'">'+OUTC.map((t,k)=>'<option value="'+k+'"'+(k===o?" selected":"")+'>'+t+'</option>').join("")+'</select></div>'+(over?'<div class="vp-w"><i class=ic-alert></i> Overfill surcharge '+((c.over&&vis.today&&S.billed)?'billed · $30':'ready to bill · $30')+'</div>':'')+'</div>';
   h+='<div class="vp-s"><small>SERVICE</small><div class="vp-g"><div><span>Arrived</span><b>'+vis.arr+'</b></div><div><span>Departed</span><b>'+(vis.dep||vis.arr)+'</b></div></div><span class="vp-k">Vehicle</span><a class="vp-v">'+TRUCK[c.route]+'</a></div>';
   const n=3,i=S.vpPhoto%n;
   h+='<div class="vp-s"><div class="vp-ph"><small>PROOF</small><button class="vp-dl" data-vvid><i class=ic-video></i> '+(S.vpVid?"Hide video":"Download video")+'</button></div>'+(S.vpVid?'<video class="vp-vid" src="'+MEDIA[over?"vo":"vn"]+'" controls autoplay muted playsinline></video><small class="vp-vn">Truck camera · '+vis.arr+' · 5 s clip</small>':'')+'<div class="vp-pc"><div class="vp-im">'+camScene(vis.key+"p"+i,over)+'<button class="vp-d" data-dnone aria-label="Download photo"><i class=ic-share></i></button></div><div><b>Photo captured · '+n+'</b><small>GPS −23.5614, −46.6559</small><small>'+vis.arr+'</small></div></div><div class="vp-pg"><button data-vph="-1" aria-label="Previous"><i class=ic-left></i></button><span>'+(i+1)+' / '+n+'</span><button data-vph="1" aria-label="Next" class="flip"><i class=ic-left></i></button></div></div>';
+  h+='<div class="vp-s"><small>CUSTOMER MESSAGE</small><textarea placeholder="Add a message for this customer"></textarea></div></div>';
+  return h}
+function stopEta(c){if(c.route==="14")return fmt(STOPS[c.stop].t);return fmt(hashN(c.id)%30+4)}
+function vpPending(c,v){const cur=c.route==="14"&&c.stop===nextStopIndex();const last=visits(c)[0];const lo=S.outc[last.key]??last.o;const lp=PILL[lo];
+  let h='<div class="vp-h"><span class="vp-n">'+(c.stop||"—")+'</span><div><b>'+c.id+'</b><small>· '+c.name+'</small><small>· Mon, Oct 26 · '+c.type+' · <span class="vp-tag">Waste</span></small><button class="vp-l" data-vcust="'+c.id+'"><i class=ic-clock></i> View customer history</button></div><button class="vp-x" data-vclose aria-label="Close"><i class=ic-x></i></button></div><div class="vp-b">';
+  h+='<div class="vp-s"><small>Address</small><b>'+c.loc+'</b></div>';
+  h+='<div class="vp-s"><small>STATUS</small><div class="vp-o"><span class="vp-p '+(cur?"info":"mute")+'">● '+(cur?"En route":"Scheduled")+'</span></div></div>';
+  h+='<div class="vp-s"><small>SERVICE</small><div class="vp-g"><div><span>ETA</span><b>'+stopEta(c)+' AM</b></div><div><span>Stop</span><b>'+(c.stop?c.stop+' of 5':'—')+'</b></div></div><span class="vp-k">Vehicle</span><a class="vp-v">'+TRUCK[c.route]+'</a></div>';
+  h+='<div class="vp-s"><small>PROOF</small><div class="vp-wait"><i class=ic-camera></i><b>No capture yet</b><small>Photos and the camera clip appear here as soon as the truck services this stop.</small></div></div>';
+  h+='<div class="vp-s"><small>LAST VISIT</small><div class="vp-o"><span class="vp-p '+lp[0]+'">● '+lp[1]+'</span><b style="font-size:13px">'+last.date+' · '+last.arr+'</b></div></div>';
   h+='<div class="vp-s"><small>CUSTOMER MESSAGE</small><textarea placeholder="Add a message for this customer"></textarea></div></div>';
   return h}
 function renderVP(){const zp=document.querySelector("#view-manager .zpanel");if(!zp)return;let el=$("#vPanel");if(!el){el=document.createElement("div");el.id="vPanel";zp.appendChild(el)}
@@ -2078,7 +2092,7 @@ function renderCust(){const pg=$("#pg-traveller");let h;
 const _rmOrig=renderManager;
 renderManager=function(){_rmOrig();if(S.fmTab==="traveller")renderCust();renderVP()};
 document.addEventListener("click",e=>{const el=e.target.closest("button,tr");if(!el)return;
-  if(el.dataset.vstop){const c=CUST.find(x=>x.id===el.dataset.vstop);const tv=todayVisit(c);if(!tv){toast("Not serviced yet. ETA "+fmt(STOPS[c.stop].t));return}S.vp={cid:c.id,key:c.id+"|today",from:"live"};S.vpPhoto=0;render();return}
+  if(el.dataset.vstop){const c=CUST.find(x=>x.id===el.dataset.vstop);const tv=todayVisit(c);S.vp={cid:c.id,key:c.id+(tv?"|today":"|pending"),from:"live"};S.vpPhoto=0;render();return}
   if(el.dataset.cust){S.cust=el.dataset.cust;render();return}
   if(el.hasAttribute("data-cback")){S.cust=null;render();return}
   if(el.dataset.visit){S.vp={cid:S.cust,key:el.dataset.visit,from:"cust"};S.vpPhoto=0;render();return}
@@ -2159,7 +2173,7 @@ renderManager=function(){reskin();_rmMid();if(S.fmTab==="guardian")renderHol();d
 document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   if(b.hasAttribute("data-gcol")){S.gCol=!S.gCol;render();return}
   if(b.hasAttribute("data-clarity")){toast("Ask Clarity: ZenduONE’s AI assistant (beta)");return}
-  if(b.dataset.vstop2){const c=CUST.find(x=>x.id===b.dataset.vstop2);const tv=todayVisit(c);if(!tv){toast("Not serviced yet");return}S.vp={cid:c.id,key:c.id+"|today",from:"live"};S.vpPhoto=0;render()}});
+  if(b.dataset.vstop2){const c=CUST.find(x=>x.id===b.dataset.vstop2);const tv=todayVisit(c);S.vp={cid:c.id,key:c.id+(tv?"|today":"|pending"),from:"live"};S.vpPhoto=0;render()}});
 
 /* ---------- list view (matches the web app's table view) ---------- */
 S.gView="map";S.gDrv="all";

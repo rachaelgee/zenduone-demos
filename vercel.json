@@ -13,6 +13,10 @@
     {
       "source": "/waste-simulation",
       "destination": "/zenduwork-waste-simulation"
+    },
+    {
+      "source": "/airport",
+      "destination": "/zenduone-airport-prototype"
     }
   ],
   "headers": [

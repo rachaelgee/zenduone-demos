@@ -6,4 +6,5 @@ Static site: one self-contained HTML file per demo. Deployed with Vercel.
 - /waste — Waste guided prototype
 - /airport — Airport ground operations guided prototype
 - /driver-safety — Driver calling, safety & maintenance guided prototype
+- /live-map — Live Map overview guided prototype (fleet manager)
 - /waste-simulation — Waste live simulation (presenter)

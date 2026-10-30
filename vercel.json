@@ -21,6 +21,10 @@
     {
       "source": "/driver-safety",
       "destination": "/zenduone-driver-safety-prototype"
+    },
+    {
+      "source": "/live-map",
+      "destination": "/zenduone-live-map-prototype"
     }
   ],
   "headers": [

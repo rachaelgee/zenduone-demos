@@ -17,6 +17,10 @@
     {
       "source": "/airport",
       "destination": "/zenduone-airport-prototype"
+    },
+    {
+      "source": "/driver-safety",
+      "destination": "/zenduone-driver-safety-prototype"
     }
   ],
   "headers": [

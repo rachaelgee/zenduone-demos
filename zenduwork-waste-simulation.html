@@ -1081,6 +1081,10 @@ html,body{background:#fff!important}
 .vp-wait{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:18px 14px;border:1px dashed #D0D5DD;border-radius:10px;background:#F9FAFB;color:#475467}
 .vp-wait i{width:22px;height:22px;color:#98A2B3}.vp-wait b{font-size:13px;color:#344054}.vp-wait small{font-size:12px;color:#667085;text-transform:none;letter-spacing:0}
 .vp-p.info{background:#EFF8FF;color:#175CD3}
+
+.cth{object-fit:cover;display:block}img.cth{width:64px;height:40px;border-radius:4px}img.cth.big{width:100%;height:auto;aspect-ratio:16/9}
+.feedw{position:relative;line-height:0}.feedw video,.feedw img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}.feedw span{position:absolute;left:8px;top:8px;font:600 10px/1.4 monospace;color:#fff;background:rgba(0,0,0,.5);padding:1px 6px;border-radius:4px}
+img.binph{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block}
 </style>
 </head>
 <body>
@@ -1418,7 +1422,7 @@ const BINS={"Padaria Bella Paulista":"2 × 4 yd · front-load","Empório Pinheir
 const ADDR=["","Rua Haddock Lobo, 1200","Rua dos Pinheiros, 412","Rua Aspicuelta, 85","Alameda Lorena, 700","Av. do Estado, Ponte Pequena"];
 S.exOpen=false;S.billed=false;S.photo={};S.collected={};
 function overfillOn(){return S.t>=16.4}
-function binPhoto(flag){return '<svg class="binph" viewBox="0 0 320 180"><defs><linearGradient id="bp1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B4A5E"/><stop offset="1" stop-color="#1F2A37"/></linearGradient></defs><rect width="320" height="180" fill="url(#bp1)"/><rect x="0" y="128" width="320" height="52" fill="#2B3340"/><rect x="18" y="20" width="60" height="96" fill="#4A5A70" rx="2"/><rect x="250" y="34" width="56" height="82" fill="#4A5A70" rx="2"/><g transform="translate(96 62)"><path d="M0 30h128l-10 78H10z" fill="#0E7C3A"/><rect x="-6" y="24" width="140" height="10" rx="3" fill="#0B6430"/><ellipse cx="34" cy="20" rx="26" ry="18" fill="#1F2937"/><ellipse cx="76" cy="10" rx="30" ry="22" fill="#111827"/><ellipse cx="108" cy="22" rx="20" ry="15" fill="#374151"/><ellipse cx="58" cy="-6" rx="18" ry="13" fill="#1F2937"/><path d="M-6 24l40-46" stroke="#0B6430" stroke-width="7" stroke-linecap="round"/></g>'+(flag?'<rect x="80" y="30" width="162" height="146" fill="none" stroke="#F79009" stroke-width="3" stroke-dasharray="7 5" rx="4"/><rect x="80" y="12" width="132" height="20" rx="4" fill="#F79009"/><text x="146" y="26" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff" font-family="Inter,sans-serif">Overfill · 95% load</text>':'')+'<rect x="0" y="158" width="320" height="22" fill="rgba(0,0,0,.55)"/><text x="8" y="173" font-size="10" fill="#fff" font-family="Inter,sans-serif">ZenCam · 7:16 AM · −23.5614, −46.6559 · Truck 4442</text></svg>'}
+function binPhoto(flag){return '<img class="binph" alt="" src="'+MEDIA[flag?"ob":"oa"]+'">'}
 
 S.wFilt="all";S.wExp={};S.wQ="";S.wZoom=1;S.wLabels=true;
 function simRoutes(){const t=S.t;const ni=nextStopIndex();

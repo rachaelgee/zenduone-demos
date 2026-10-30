@@ -1819,6 +1819,7 @@ function measure(reveal){
   else if(R.l-g-cw>12){cl=R.l-g-cw;ct=R.t+R.h/2-ch/2}
   else if(R.t+R.h+g+ch<vh-12){ct=R.t+R.h+g;cl=R.l}
   else{ct=R.t-g-ch;cl=R.l}
+  {const bx=el.closest(".zalert");if(bx){const B=bx.getBoundingClientRect();if(B.bottom+g+ch<vh-12){ct=B.bottom+g;cl=B.left+B.width/2-cw/2}else if(B.right+g+cw<vw-12){cl=B.right+g;ct=B.top}else if(B.left-g-cw>12){cl=B.left-g-cw;ct=B.top}}}
   cl=Math.max(12,Math.min(cl,vw-cw-12));ct=Math.max(76,Math.min(ct,vh-ch-12));
   tEl.coach.style.left=cl+"px";tEl.coach.style.top=ct+"px";lastRect=R;
 }
@@ -1958,6 +1959,7 @@ function place(el,r){
   else if(side==="below"){T2=R.t+R.h+g+8;L=R.l+R.w/2-tw/2;a.style.cssText="top:-30px;left:"+(tw/2-13)+"px"}
   else{T2=R.t-g-th-8;L=R.l+R.w/2-tw/2;a.style.cssText="bottom:-30px;left:"+(tw/2-13)+"px;transform:rotate(180deg)"}
   if(r&&r.above&&r.jump!=null)L=vw-tw-24;
+  {const bx=el.closest(".zalert");if(bx){const B=bx.getBoundingClientRect();if(B.bottom+g+th+20<vh-12){side="below";T2=B.bottom+g+8;L=B.left+B.width/2-tw/2;a.style.cssText="top:-30px;left:"+(tw/2-13)+"px"}}}
   const L2=Math.max(12,Math.min(L,vw-tw-12)),T3=Math.max(72,Math.min(T2,vh-th-12));
   if(side==="below"||side==="above")a.style.left=Math.max(8,Math.min(tw-34,R.l+R.w/2-L2-13))+"px";
   x.tip.style.left=L2+"px";x.tip.style.top=T3+"px";

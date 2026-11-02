@@ -25,6 +25,10 @@
     {
       "source": "/live-map",
       "destination": "/zenduone-live-map-prototype"
+    },
+    {
+      "source": "/deck/school-shuttle",
+      "destination": "/seller-deck-school-shuttle"
     }
   ],
   "headers": [

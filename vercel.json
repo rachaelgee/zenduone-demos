@@ -27,6 +27,14 @@
       "destination": "/zenduone-live-map-prototype"
     },
     {
+      "source": "/fleet-safety",
+      "destination": "/zenduone-fleet-safety-prototype"
+    },
+    {
+      "source": "/maintenance",
+      "destination": "/zenduone-maintenance-prototype"
+    },
+    {
       "source": "/deck/school-shuttle",
       "destination": "/seller-deck-school-shuttle"
     },

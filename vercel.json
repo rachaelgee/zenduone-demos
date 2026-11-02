@@ -35,8 +35,12 @@
       "destination": "/zenduone-maintenance-prototype"
     },
     {
-      "source": "/deck/school-shuttle",
-      "destination": "/seller-deck-school-shuttle"
+      "source": "/deck/school-bus",
+      "destination": "/seller-deck-school-bus"
+    },
+    {
+      "source": "/deck/shuttle",
+      "destination": "/seller-deck-shuttle"
     },
     {
       "source": "/brochure/zenbus",
@@ -52,6 +56,18 @@
           "value": "noindex, nofollow"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/deck/school-shuttle",
+      "destination": "/deck/school-bus",
+      "permanent": false
+    },
+    {
+      "source": "/seller-deck-school-shuttle",
+      "destination": "/deck/school-bus",
+      "permanent": false
     }
   ]
 }

@@ -11,3 +11,4 @@ Static site: one self-contained HTML file per demo. Deployed with Vercel.
 
 ## Sales tools
 - /deck/school-shuttle — personalisable ZenBUS & Shuttle seller deck (PDF, PowerPoint, Google Slides, Present). Libraries are self-hosted in /vendor.
+- /brochure/zenbus — ZenBUS flip-book brochure; sellers personalise it and copy a customer link (details travel after # so they stay out of server logs). page-flip is self-hosted in /vendor.

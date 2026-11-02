@@ -29,6 +29,10 @@
     {
       "source": "/deck/school-shuttle",
       "destination": "/seller-deck-school-shuttle"
+    },
+    {
+      "source": "/brochure/zenbus",
+      "destination": "/brochure-zenbus"
     }
   ],
   "headers": [

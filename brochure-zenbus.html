@@ -391,6 +391,8 @@ html.is-book #dlBook { display: none !important; }
   var dotsEl = document.getElementById('dots');
   var pages = [1, 2, 3, 4].map(function (n) { return document.getElementById('pg' + n); });
 
+  var SRC_HTML = '<!doctype html>\n' + document.documentElement.outerHTML;
+  var PUBLIC_URL = 'https://zenduone-demos.vercel.app/brochure/zenbus';
   /* ---------- personalisation ---------- */
   var TEXT = ['district', 'seller', 'date', 'email', 'phone', 'next'];
   var CUST = ['district', 'date', 'next'];
@@ -539,7 +541,10 @@ html.is-book #dlBook { display: none !important; }
     return false;
   }
   function fileBase() { return ('ZenBUS brochure' + (personal && values.district ? ' - ' + values.district : '')).replace(/[\\/:*?"<>|]+/g, '').slice(0, 80); }
-  function deliver(blob, filename) {
+  var downloadsCap = null;
+  (window.claude && window.claude.use ? window.claude.use('downloads') : Promise.resolve(null)).then(function (d) { downloadsCap = d; }, function () {});
+  async function deliver(blob, filename) {
+    if (downloadsCap) { try { await downloadsCap.save({ filename: filename, data: blob }); } catch (e) { if (!(e && e.code === 'declined')) throw e; } return; }
     var a = document.createElement('a'), url = URL.createObjectURL(blob);
     a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
@@ -570,7 +575,7 @@ html.is-book #dlBook { display: none !important; }
         if (i > 0) doc.addPage([816, 1056], 'portrait');
         doc.addImage(shot, 'JPEG', 0, 0, 816, 1056);
       }
-      deliver(doc.output('blob'), fileBase() + '.pdf');
+      await deliver(doc.output('blob'), fileBase() + '.pdf');
       say('PDF downloaded.');
     } catch (e) { say('The PDF could not be made. Reload the page and try again.', true); }
     finally { rs.innerHTML = ''; exporting = false; apply(); lock(false); }
@@ -581,17 +586,16 @@ html.is-book #dlBook { display: none !important; }
     if (busy || needsCustomer()) return;
     lock(true); say('Preparing the flip book…');
     try {
-      var html = await (await fetch(location.pathname, { cache: 'no-store' })).text();
-      var lib = await (await fetch('/vendor/page-flip.browser.js')).text();
-      var h2i = await (await fetch('/vendor/html-to-image.js')).text();
-      var jsp = await (await fetch('/vendor/jspdf.umd.min.js')).text();
-      if (html.indexOf('<script src="/vendor/page-flip.browser.js"><\/script>') < 0) throw new Error('source');
+      var html = SRC_HTML;
+      async function lib(u) { return html.indexOf('<script src="' + u + '"><\/script>') < 0 ? '' : (await fetch(u)).text(); }
+      var lib0 = await lib('/vendor/page-flip.browser.js'), h2i = await lib('/vendor/html-to-image.js'), jsp = await lib('/vendor/jspdf.umd.min.js');
+      if (html.indexOf('<meta name="robots" content="noindex">') < 0) throw new Error('source');
       var book = { values: finalValues(), logo: logo, logoDark: logoDark };
-      html = html.replace('<script src="/vendor/page-flip.browser.js"><\/script>', function () { return '<script>' + lib.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
+      html = html.replace('<script src="/vendor/page-flip.browser.js"><\/script>', function () { return '<script>' + lib0.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
         .replace('<script src="/vendor/html-to-image.js"><\/script>', function () { return '<script>' + h2i.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
         .replace('<script src="/vendor/jspdf.umd.min.js"><\/script>', function () { return '<script>' + jsp.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
         .replace('<meta name="robots" content="noindex">', '<meta name="robots" content="noindex"><script>window.__BOOK=' + JSON.stringify(book).replace(/</g, '\\u003c') + ';<\/script>');
-      deliver(new Blob([html], { type: 'text/html' }), fileBase() + ' (flip book).html');
+      await deliver(new Blob([html], { type: 'text/html' }), fileBase() + ' (flip book).html');
       say('Flip book downloaded. It opens in any browser, so you can attach it to an email.');
     } catch (e) { say('The flip book could not be made here. Open the brochure on the ZenduONE demos site and try again.', true); }
     finally { lock(false); }
@@ -608,7 +612,8 @@ html.is-book #dlBook { display: none !important; }
     var a = await shrink(logo), b = await shrink(logoDark);
     if (a) p.set('lg', a);
     if (b) p.set('lgd', b);
-    var url = location.origin + location.pathname + '#' + p.toString();
+    var base = /vercel\.app$|zendu/.test(location.hostname) ? location.origin + location.pathname : PUBLIC_URL;
+    var url = base + '#' + p.toString();
     out.value = url; out.hidden = false;
     var note = (a || b) ? ' Your logo is built into the link, so it is long. If an email app breaks it, send the flip book or PDF instead.' : '';
     try {

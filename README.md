@@ -13,4 +13,5 @@ Static site: one self-contained HTML file per demo, deck and brochure. Deployed 
 
 ## Decks & brochures
 - /deck/school-bus and /deck/shuttle — personalisable ZenBUS School Bus and Shuttle seller decks, built on the approved product decks from Featurebase (/deck/school-shuttle redirects to /deck/school-bus) (PDF, PowerPoint, Google Slides, Present). Libraries are self-hosted in /vendor.
+- /deck/waste and /brochure/waste: personalisable Zenduit Waste deck (11 slides) and value-proposition brochure (3 pages), built from Larissa's Claude Design files
 - /brochure/zenbus — ZenBUS flip-book brochure; sellers personalise it and copy a customer link (details travel after # so they stay out of server logs). page-flip is self-hosted in /vendor.

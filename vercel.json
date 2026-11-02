@@ -43,8 +43,16 @@
       "destination": "/seller-deck-shuttle"
     },
     {
+      "source": "/deck/waste",
+      "destination": "/seller-deck-waste"
+    },
+    {
       "source": "/brochure/zenbus",
       "destination": "/brochure-zenbus"
+    },
+    {
+      "source": "/brochure/waste",
+      "destination": "/seller-brochure-waste"
     }
   ],
   "headers": [

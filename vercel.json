@@ -19,10 +19,6 @@
       "destination": "/zenduone-airport-prototype"
     },
     {
-      "source": "/driver-safety",
-      "destination": "/zenduone-driver-safety-prototype"
-    },
-    {
       "source": "/live-map",
       "destination": "/zenduone-live-map-prototype"
     },
@@ -75,6 +71,16 @@
     {
       "source": "/seller-deck-school-shuttle",
       "destination": "/deck/school-bus",
+      "permanent": false
+    },
+    {
+      "source": "/driver-safety",
+      "destination": "/fleet-safety",
+      "permanent": false
+    },
+    {
+      "source": "/zenduone-driver-safety-prototype",
+      "destination": "/fleet-safety",
       "permanent": false
     }
   ]

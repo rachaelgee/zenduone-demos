@@ -93,12 +93,56 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 .acts .btn { width: 100%; }
 .status.err { color: #B42318; }
 #renderStage { position: fixed; left: -10000px; top: 0; width: 816px; pointer-events: none; }
+.topbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--surface); border-bottom: 1px solid var(--line); padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); position: sticky; top: 0; z-index: 30; }
+.brand { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin-right: auto; }
+.brand b { font-size: 15px; font-weight: 700; }
+.brand span { font-size: 12px; color: var(--muted); }
+.topbar .btn { min-height: 40px; padding: 0 14px; }
+.btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.toggle .switch { position: relative; width: 30px; height: 18px; border-radius: 9px; background: var(--line); transition: background 160ms ease; flex-shrink: 0; }
+.toggle .knob { position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(1,24,53,.3); transition: transform 160ms ease; }
+.toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--bg); }
+.toggle[aria-pressed="true"] .switch { background: var(--accent); }
+.toggle[aria-pressed="true"] .knob { transform: translateX(12px); }
+.menu-wrap { position: relative; }
+.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; min-width: 250px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 6px; box-shadow: 0 16px 40px -12px rgba(1,24,53,.35); display: flex; flex-direction: column; }
+.menu[hidden] { display: none; }
+.menu button { text-align: left; border: 0; background: transparent; color: var(--ink); padding: 10px 12px; border-radius: 8px; cursor: pointer; font: 600 14px/1.3 var(--font); display: flex; flex-direction: column; gap: 2px; }
+.menu button:hover { background: var(--bg); }
+.menu button:disabled { opacity: .5; cursor: progress; }
+.menu small { font-size: 12px; font-weight: 400; color: var(--muted); }
+.panel { flex: 1 1 440px; max-width: 520px; }
+.panel[hidden] { display: none !important; }
+.row2.nd { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; }
+.row2.logos .logo-row { flex-direction: row; align-items: center; }
+.row2.logos .logo-row input[type=file] { width: 100%; }
+.row2.logos .logo-thumb { max-width: 130px; }
+.field label em { font-style: normal; font-weight: 400; }
+.outrow { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; max-width: 640px; }
+.outrow input { width: 100%; font: 400 12px/1.4 var(--font); padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); box-sizing: border-box; }
+.outrow .status { text-align: center; }
+.is-customer .topbar { display: none; }
+@media (max-width: 1100px) { .panel { max-width: none; flex-basis: 100%; } }
+@media (max-width: 560px) { .row2.nd, .row2.logos { grid-template-columns: minmax(0, 1fr); } .topbar .btn { padding: 0 10px; } }
 .is-customer .panel { display: none; }
+.app:not(.is-customer) .eyebrow { display: none; }
 
 @media (max-width: 760px) { .panel { max-width: none; } }
 
 </style>
 
+<header class="topbar">
+  <div class="brand"><b>Brochure</b><span>ZenBUS · School bus · 4 pages</span></div>
+  <button class="btn toggle" id="togglePanel" type="button" aria-pressed="true" aria-controls="panel" title="Turn off for a generic brochure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Personalise<span class="switch" aria-hidden="true"><span class="knob"></span></span></button>
+  <div class="menu-wrap">
+    <button class="btn" id="dlBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="dlMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+    <div class="menu" id="dlMenu" hidden>
+      <button type="button" id="dlPdf">PDF<small>To email or print</small></button>
+      <button type="button" id="dlBook">Flip book (.html)<small>Turns like paper, opens in any browser</small></button>
+    </div>
+  </div>
+  <button class="btn primary" id="copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Copy customer link</button>
+</header>
 <div class="app" id="app">
   <section class="viewer" aria-label="ZenBUS brochure">
     <div class="topline">
@@ -115,22 +159,21 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
       <span class="counter" id="counter" aria-live="polite">Front cover</span>
       <button class="btn" id="next" type="button" aria-label="Next page"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
-    <div class="dots" id="dots" role="group" aria-label="Jump to view"></div>
+    <div class="outrow"><input id="linkOut" aria-label="Customer link" readonly hidden>
+      <p class="status" id="status" role="status" aria-live="polite"></p></div>
+<div class="dots" id="dots" role="group" aria-label="Jump to view"></div>
     <p class="hint">Drag a page corner, click a page, or use the arrow keys to turn.</p>
   </section>
 
   <aside class="panel" id="panel" aria-labelledby="panelTitle">
-    <div class="ph">
-      <h2 id="panelTitle">Brochure</h2>
-      <label class="switch-row"><span>Personalise for a customer</span><input type="checkbox" id="pOn" role="switch" checked><span class="sw" aria-hidden="true"><span></span></span></label>
-    </div>
-    <p class="lede">Fill in what you need. The brochure updates as you type, and the downloads and link use exactly what you see.</p>
+    <h2 id="panelTitle">Personalise for your customer</h2>
+    <p class="lede">Fill in what you need. The brochure updates as you type, and the downloads and the customer link use exactly what you see. Turn off Personalise for a generic brochure.</p>
     <form id="form" class="linkout" novalidate>
       <fieldset class="grp" id="custGrp">
         <legend>Your customer</legend>
         <div class="field"><label for="f-district">District or customer name</label><input id="f-district" name="district" maxlength="60" autocomplete="off" placeholder="Maple Valley School District"></div>
-        <div class="field"><label for="f-next">Proposed next step</label><textarea id="f-next" name="next" maxlength="140" placeholder="A 30-minute walkthrough with your transportation team"></textarea></div>
-        <div class="field"><label for="f-date">Date</label><input id="f-date" name="date" maxlength="30" autocomplete="off" placeholder="November 2026"></div>
+        <div class="row2 nd"><div class="field"><label for="f-next">Proposed next step</label><textarea id="f-next" name="next" maxlength="140" placeholder="A 30-minute walkthrough with your transportation team"></textarea></div>
+        <div class="field"><label for="f-date">Date</label><input id="f-date" name="date" maxlength="30" autocomplete="off" placeholder="November 2026"></div></div>
       </fieldset>
       <fieldset class="grp">
         <legend>You</legend>
@@ -139,20 +182,16 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
           <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" maxlength="80" autocomplete="off" placeholder="jordan@acmefleet.com"></div>
           <div class="field"><label for="f-phone">Phone</label><input id="f-phone" name="phone" maxlength="30" autocomplete="off" placeholder="+1 555 010 0100"></div>
         </div>
-        <div class="field"><label for="f-logo">Your logo for light pages (PNG, JPG or SVG)</label>
+        <div class="row2 logos"><div class="field"><label for="f-logo">Logo for light pages</label>
           <div class="logo-row"><input id="f-logo" type="file" accept="image/png,image/jpeg,image/svg+xml"><img id="logoThumb" class="logo-thumb" alt="Your logo" hidden><button class="btn sm" id="logoClear" type="button" hidden>Remove</button></div></div>
-        <div class="field"><label for="f-logo-dark">Your logo for dark areas (optional, a white or light version)</label>
+        <div class="field"><label for="f-logo-dark">Logo for dark areas <em>optional</em></label>
           <div class="logo-row"><input id="f-logo-dark" type="file" accept="image/png,image/jpeg,image/svg+xml"><img id="logoThumbDark" class="logo-thumb dark" alt="Your logo for dark areas" hidden><button class="btn sm" id="logoClearDark" type="button" hidden>Remove</button></div>
-          <small class="fhint">Without it, the back cover shows your light-page logo on a white tile.</small></div>
+          </div></div>
+        <small class="fhint">PNG, JPG or SVG. For the dark area, use a white or light version; without one, your logo sits on a white tile there.</small>
       </fieldset>
       <p class="rule">The headlines and features are approved product claims and can't be edited. Don't add prices, results or customer quotes in the next-step field.</p>
-      <div class="acts">
-        <button class="btn primary" id="dlPdf" type="button">Download PDF</button>
-        <button class="btn" id="dlBook" type="button">Download flip book</button>
-        <button class="btn" id="copy" type="submit">Copy customer link</button>
-      </div>
-      <input id="linkOut" aria-label="Customer link" readonly hidden>
-      <p class="status" id="status" role="status" aria-live="polite"></p>
+      
+
     </form>
   </aside>
 </div>
@@ -434,10 +473,16 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 
   /* form */
   var form = document.getElementById('form');
-  var pOn = document.getElementById('pOn'), custGrp = document.getElementById('custGrp');
-  function setPersonal(on) { personal = on; pOn.checked = on; custGrp.hidden = !on; }
+  var toggle = document.getElementById('togglePanel'), panel = document.getElementById('panel');
+  function setPersonal(on) { personal = on; panel.hidden = !on; toggle.setAttribute('aria-pressed', String(on)); toggle.title = on ? 'Turn off for a generic brochure' : 'Turn on to personalise for a customer'; setTimeout(function () { if (typeof layout === 'function') layout(); }, 0); }
   setPersonal(personal);
-  pOn.addEventListener('change', function () { setPersonal(pOn.checked); apply(); save(); say(''); });
+  toggle.addEventListener('click', function () { setPersonal(!personal); apply(); save(); say(personal ? '' : 'Generic brochure: customer details are left out. Your name, contact details and logo still show.'); });
+  var dlBtn = document.getElementById('dlBtn'), dlMenu = document.getElementById('dlMenu');
+  function menu(open) { dlMenu.hidden = !open; dlBtn.setAttribute('aria-expanded', String(open)); }
+  dlBtn.addEventListener('click', function () { menu(dlMenu.hidden); });
+  dlMenu.addEventListener('click', function () { menu(false); });
+  document.addEventListener('click', function (e) { if (!dlMenu.hidden && !e.target.closest('.menu-wrap')) menu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') menu(false); });
   TEXT.forEach(function (k) {
     var input = document.getElementById('f-' + k);
     if (values[k]) input.value = values[k];
@@ -486,7 +531,7 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 
   function finalValues() { var o = {}; TEXT.forEach(function (k) { var v = eff(k); if (v) o[k] = v; }); return o; }
   function needsCustomer() {
-    if (personal && !values.district) { say('Add the customer name, or switch off Personalise for a generic brochure.', true); document.getElementById('f-district').focus(); return true; }
+    if (personal && !values.district) { say('Add the customer name, or turn off Personalise for a generic brochure.', true); document.getElementById('f-district').focus(); return true; }
     return false;
   }
   function fileBase() { return ('ZenBUS brochure' + (personal && values.district ? ' - ' + values.district : '')).replace(/[\\/:*?"<>|]+/g, '').slice(0, 80); }
@@ -497,7 +542,7 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
   }
   function frame() { return new Promise(function (r) { requestAnimationFrame(function () { setTimeout(r, 30); }); }); }
   var busy = false;
-  function lock(on) { busy = on; ['dlPdf', 'dlBook', 'copy'].forEach(function (id) { document.getElementById(id).disabled = on; }); }
+  function lock(on) { busy = on; ['dlPdf', 'dlBook', 'copy', 'dlBtn'].forEach(function (id) { document.getElementById(id).disabled = on; }); }
 
   /* PDF: one letter-size page per brochure page, exactly as personalised */
   document.getElementById('dlPdf').addEventListener('click', async function () {
@@ -548,8 +593,8 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 
   /* Customer link: everything after # so it never reaches a server log */
   function shrink(src) { return new Promise(function (r) { if (!src) return r(''); normLogo(src, 360, 120, 'image/webp', r); }); }
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+  document.getElementById('copy').addEventListener('click', async function (e) {
     if (busy || needsCustomer()) return;
     var out = document.getElementById('linkOut');
     var p = new URLSearchParams(), fv = finalValues();

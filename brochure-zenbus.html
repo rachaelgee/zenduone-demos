@@ -121,7 +121,8 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 .outrow { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; max-width: 640px; }
 .outrow input { width: 100%; font: 400 12px/1.4 var(--font); padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); box-sizing: border-box; }
 .outrow .status { text-align: center; }
-.is-customer .topbar { display: none; }
+html.is-customer #togglePanel, html.is-customer #copy, html.is-customer .outrow input { display: none !important; }
+html.is-book #dlBook { display: none !important; }
 @media (max-width: 1100px) { .panel { max-width: none; flex-basis: 100%; } }
 @media (max-width: 560px) { .row2.nd, .row2.logos { grid-template-columns: minmax(0, 1fr); } .topbar .btn { padding: 0 10px; } }
 .is-customer .panel { display: none; }
@@ -462,7 +463,7 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
   if (preset) {
     TEXT.forEach(function (k) { if (preset.values && preset.values[k]) values[k] = clean(preset.values[k]); });
     logo = safeImg(preset.logo); logoDark = safeImg(preset.logoDark);
-    app.classList.add('is-customer');
+    app.classList.add('is-customer'); app.classList.add('is-book');
   } else if (TEXT.concat(['logo', 'lg', 'lgd']).some(function (k) { return params.get(k); })) {
     TEXT.forEach(function (k) { var v = params.get(k); if (v) values[k] = clean(v); });
     logo = safeImg(params.get('lg') || params.get('logo')); logoDark = safeImg(params.get('lgd'));
@@ -471,12 +472,14 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
     load();
   }
 
+  ['is-customer', 'is-book'].forEach(function (c) { document.documentElement.classList.toggle(c, app.classList.contains(c)); });
+
   /* form */
   var form = document.getElementById('form');
   var toggle = document.getElementById('togglePanel'), panel = document.getElementById('panel');
   function setPersonal(on) { personal = on; panel.hidden = !on; toggle.setAttribute('aria-pressed', String(on)); toggle.title = on ? 'Turn off for a generic brochure' : 'Turn on to personalise for a customer'; setTimeout(function () { if (typeof layout === 'function') layout(); }, 0); }
   setPersonal(personal);
-  toggle.addEventListener('click', function () { setPersonal(!personal); apply(); save(); say(personal ? '' : 'Generic brochure: customer details are left out. Your name, contact details and logo still show.'); });
+  toggle.addEventListener('click', function () { setPersonal(!personal); apply(); save(); say(''); });
   var dlBtn = document.getElementById('dlBtn'), dlMenu = document.getElementById('dlMenu');
   function menu(open) { dlMenu.hidden = !open; dlBtn.setAttribute('aria-expanded', String(open)); }
   dlBtn.addEventListener('click', function () { menu(dlMenu.hidden); });
@@ -531,6 +534,7 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 
   function finalValues() { var o = {}; TEXT.forEach(function (k) { var v = eff(k); if (v) o[k] = v; }); return o; }
   function needsCustomer() {
+    if (app.classList.contains('is-customer')) return false;
     if (personal && !values.district) { say('Add the customer name, or turn off Personalise for a generic brochure.', true); document.getElementById('f-district').focus(); return true; }
     return false;
   }
@@ -579,11 +583,13 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
     try {
       var html = await (await fetch(location.pathname, { cache: 'no-store' })).text();
       var lib = await (await fetch('/vendor/page-flip.browser.js')).text();
+      var h2i = await (await fetch('/vendor/html-to-image.js')).text();
+      var jsp = await (await fetch('/vendor/jspdf.umd.min.js')).text();
       if (html.indexOf('<script src="/vendor/page-flip.browser.js"><\/script>') < 0) throw new Error('source');
       var book = { values: finalValues(), logo: logo, logoDark: logoDark };
       html = html.replace('<script src="/vendor/page-flip.browser.js"><\/script>', function () { return '<script>' + lib.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
-        .replace('<script src="/vendor/html-to-image.js"><\/script>', '')
-        .replace('<script src="/vendor/jspdf.umd.min.js"><\/script>', '')
+        .replace('<script src="/vendor/html-to-image.js"><\/script>', function () { return '<script>' + h2i.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
+        .replace('<script src="/vendor/jspdf.umd.min.js"><\/script>', function () { return '<script>' + jsp.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
         .replace('<meta name="robots" content="noindex">', '<meta name="robots" content="noindex"><script>window.__BOOK=' + JSON.stringify(book).replace(/</g, '\\u003c') + ';<\/script>');
       deliver(new Blob([html], { type: 'text/html' }), fileBase() + ' (flip book).html');
       say('Flip book downloaded. It opens in any browser, so you can attach it to an email.');

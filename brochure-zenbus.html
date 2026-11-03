@@ -148,6 +148,32 @@ html.is-book #dlBook { display: none !important; }
 .pthumb .hit { position: absolute; inset: 0; border: 0; background: transparent; cursor: pointer; padding: 0; }
 .pthumb .num { position: absolute; left: 5px; bottom: 5px; font-size: 11px; font-weight: 700; color: #FFFFFF; background: rgba(1,24,53,.72); padding: 2px 6px; border-radius: 5px; pointer-events: none; }
 @media (max-width: 560px) { .seg button { padding: 0 10px; } }
+/* brand colours */
+.brandset{border:0;margin:0;padding:12px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;min-width:0}
+.brandset legend{float:left;width:100%;padding:0;margin:0 0 2px;font-size:12px;font-weight:700;color:var(--ink)}
+.brandset>legend+*{clear:both}
+.bc-hex:focus-visible{box-shadow:none}
+.brandset legend em{font-style:normal;font-weight:400;color:var(--muted)}
+.bhint{margin:0 0 2px;font-size:12px;line-height:1.45;color:var(--muted)}
+.bc-row{display:grid;grid-template-columns:minmax(0,1fr) 148px;gap:10px;align-items:center}
+.bc-row label{font-size:12.5px;font-weight:600;color:var(--ink);display:flex;flex-direction:column;gap:1px}
+.bc-row label small{font-size:11.5px;font-weight:400;color:var(--muted)}
+.bc-in{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;background:var(--soft,var(--bg));padding:4px 8px 4px 4px;min-height:36px;box-sizing:border-box}
+.bc-in:focus-within{box-shadow:0 0 0 3px var(--focus)}
+.bc-sw{-webkit-appearance:none;appearance:none;width:26px;height:26px;border:1px solid rgba(1,24,53,.18);border-radius:6px;padding:0;background:none;cursor:pointer;flex:none}
+.bc-sw::-webkit-color-swatch-wrapper{padding:0}.bc-sw::-webkit-color-swatch{border:0;border-radius:5px}.bc-sw::-moz-color-swatch{border:0;border-radius:5px}
+.bc-hash{font:500 13px/1 var(--font);color:var(--muted)}
+.bc-hex{flex:1;min-width:0;border:0;background:transparent;font:500 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);text-transform:uppercase;padding:0;outline:none}
+.bc-hex::placeholder{color:var(--muted);opacity:.7}
+.bc-cr{grid-column:1/-1;font-size:11.5px;color:var(--muted);margin-top:-3px}
+.bc-cr.ok{color:#067647}.bc-cr.lo{color:#B54708}
+.bc-cr:empty{display:none}
+.bc-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bc-reset{font:600 12.5px/1 var(--font);min-height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.bc-reset:hover{border-color:var(--accent)}
+.bc-on{font-size:11.5px;color:var(--muted)}
+@media (max-width:420px){.bc-row{grid-template-columns:minmax(0,1fr)}}
+
 </style>
 
 <header class="topbar">
@@ -214,7 +240,14 @@ html.is-book #dlBook { display: none !important; }
           </div></div>
         <small class="fhint">PNG, JPG or SVG. For the dark area, use a white or light version; without one, your logo sits on a white tile there.</small>
       </fieldset>
-      <p class="rule">The headlines and features are approved product claims and can't be edited. Don't add prices, results or customer quotes in the next-step field.</p>
+      <fieldset class="brandset" id="brandSet"><legend>Brand colours <em>optional</em></legend>
+      <p class="bhint">Use your brand colours on every page. The layout, images and approved copy stay the same.</p>
+      <div class="bc-row" data-bk="p"><label for="bc-p">Primary<small>Headings, icons and highlights</small></label><div class="bc-in"><input type="color" class="bc-sw" aria-label="Pick the primary colour"><span class="bc-hash">#</span><input class="bc-hex" id="bc-p" maxlength="7" autocomplete="off" spellcheck="false" placeholder="136AB6"></div><small class="bc-cr" aria-live="polite"></small></div>
+      <div class="bc-row" data-bk="s"><label for="bc-s">Secondary<small>Dark backgrounds, so choose a dark colour</small></label><div class="bc-in"><input type="color" class="bc-sw" aria-label="Pick the secondary colour"><span class="bc-hash">#</span><input class="bc-hex" id="bc-s" maxlength="7" autocomplete="off" spellcheck="false" placeholder="011835"></div><small class="bc-cr" aria-live="polite"></small></div>
+      <div class="bc-row" data-bk="a"><label for="bc-a">Accent<small>Small highlights, lines and labels</small></label><div class="bc-in"><input type="color" class="bc-sw" aria-label="Pick the accent colour"><span class="bc-hash">#</span><input class="bc-hex" id="bc-a" maxlength="7" autocomplete="off" spellcheck="false" placeholder="12D2E5"></div><small class="bc-cr" aria-live="polite"></small></div>
+      <div class="bc-foot"><button type="button" class="bc-reset" id="bcReset">Reset to ZenduIT colours</button><span class="bc-on" id="bcOn"></span></div>
+    </fieldset>
+    <p class="rule">The headlines and features are approved product claims and can't be edited. Don't add prices, results or customer quotes in the next-step field.</p>
       
 
     </form>
@@ -462,6 +495,7 @@ html.is-book #dlBook { display: none !important; }
         slot.style.visibility = fin ? 'hidden' : 'visible';
       }
     });
+    recolor(root);
     if (root === document) {
       var shared = document.getElementById('sharedBy');
       if (values.seller && app.classList.contains('is-customer')) { shared.textContent = 'Shared by ' + values.seller; shared.hidden = false; }
@@ -614,7 +648,7 @@ html.is-book #dlBook { display: none !important; }
       async function lib(u) { return html.indexOf('<script src="' + u + '"><\/script>') < 0 ? '' : (await fetch(u)).text(); }
       var lib0 = await lib('/vendor/page-flip.browser.js'), h2i = await lib('/vendor/html-to-image.js'), jsp = await lib('/vendor/jspdf.umd.min.js');
       if (html.indexOf('<meta name="robots" content="noindex">') < 0) throw new Error('source');
-      var book = { values: finalValues(), logo: logo, logoDark: logoDark };
+      var book = { values: finalValues(), logo: logo, logoDark: logoDark, brand: brand };
       html = html.replace('<script src="/vendor/page-flip.browser.js"><\/script>', function () { return '<script>' + lib0.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
         .replace('<script src="/vendor/html-to-image.js"><\/script>', function () { return '<script>' + h2i.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
         .replace('<script src="/vendor/jspdf.umd.min.js"><\/script>', function () { return '<script>' + jsp.replace(/<\/script/gi, '<\\/script') + '<\/script>'; })
@@ -633,6 +667,7 @@ html.is-book #dlBook { display: none !important; }
     var out = document.getElementById('linkOut');
     var p = new URLSearchParams(), fv = finalValues();
     TEXT.forEach(function (k) { if (fv[k]) p.set(k, fv[k]); });
+    ['p', 's', 'a'].forEach(function (k) { if (brand[k]) p.set('b' + k, brand[k].slice(1)); });
     var a = await shrink(logo), b = await shrink(logoDark);
     if (a) p.set('lg', a);
     if (b) p.set('lgd', b);
@@ -645,6 +680,101 @@ html.is-book #dlBook { display: none !important; }
         function () { out.select(); say('Press Ctrl+C or Cmd+C to copy the selected link.' + note); });
     } catch (err) { out.select(); say('Press Ctrl+C or Cmd+C to copy the selected link.' + note); }
   });
+
+  /* ---------- brand colours ---------- */
+  var BRAND_REF = { p: '#136AB6', s: '#011835', a: '#12D2E5' };
+  var BRAND_KEY = STORE + '-brand';
+  var brand = { p: '', s: '', a: '' }, bcache = {};
+  function bHex(v) { v = String(v || '').trim().replace(/^#/, ''); if (/^[0-9a-fA-F]{3}$/.test(v)) v = v.replace(/./g, '$&$&'); return /^[0-9a-fA-F]{6}$/.test(v) ? '#' + v.toUpperCase() : ''; }
+  function hx2rgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); var n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+  function rgb2hsl(r, g, b) { r /= 255; g /= 255; b /= 255; var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, h = 0, s = 0; if (mx !== mn) { var d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; } return [h, s, l]; }
+  function hsl2rgb(h, s, l) { h /= 360; function f(p, q, t) { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q; if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; } var r, g, b; if (!s) { r = g = b = l; } else { var q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q; r = f(p, q, h + 1 / 3); g = f(p, q, h); b = f(p, q, h - 1 / 3); } return [r, g, b].map(function (x) { return Math.round(x * 255); }); }
+  function bclamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  /* which ZenduIT family a colour belongs to: s navy, p blue, t pale blue tint, a cyan; greys, status colours and warm glows stay as they are */
+  function famOf(h, s, l) {
+    if (s >= .4 && h >= 195 && h <= 236) { if (l <= .26) return 's'; if (l >= .8) return s >= .45 ? 't' : null; return s >= .5 ? 'p' : null; }
+    if (s >= .5 && h >= 170 && h < 195) return 'a';
+    return null;
+  }
+  function mapRGB(r, g, b) {
+    var key = r + ',' + g + ',' + b; if (key in bcache) return bcache[key];
+    var o = rgb2hsl(r, g, b), f = famOf(o[0], o[1], o[2]), out = null;
+    if (f) {
+      var fam = f === 't' ? 'p' : f, B = brand[fam];
+      if (B) {
+        var R = rgb2hsl.apply(null, hx2rgb(BRAND_REF[fam])), N = rgb2hsl.apply(null, hx2rgb(B));
+        var s2 = bclamp(N[1] * (R[1] ? o[1] / R[1] : 1), 0, 1), l2 = bclamp(N[2] + (o[2] - R[2]), .03, .97);
+        if (f === 't') { s2 = Math.min(s2, N[1], .85); l2 = o[2]; }
+        if (Math.abs(o[2] - R[2]) < .005 && Math.abs(o[0] - R[0]) < 2) { s2 = N[1]; l2 = N[2]; }
+        out = hsl2rgb(N[0], s2, l2);
+      }
+    }
+    return (bcache[key] = out);
+  }
+  function mapStr(str) {
+    return str.replace(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![0-9a-zA-Z_-])/g, function (m, h) { var c = hx2rgb(h), o = mapRGB(c[0], c[1], c[2]); return o ? '#' + o.map(function (x) { return ('0' + x.toString(16)).slice(-2); }).join('').toUpperCase() : m; })
+      .replace(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*[\d.]+\s*)?\)/g, function (m, r, g, b, a) { var o = mapRGB(+r, +g, +b); return o ? (a ? 'rgba(' : 'rgb(') + o.join(',') + (a || '') + ')' : m; });
+  }
+  function brandKey() { return brand.p + '|' + brand.s + '|' + brand.a; }
+  var BATTR = ['style', 'fill', 'stroke', 'stop-color'];
+  function recolorEl(e, k) {
+    if (e.dataset.ocK === k) return;
+    if (e.tagName === 'IMG' || e.hasAttribute('data-logo-slot')) { e.dataset.ocK = k; return; }
+    BATTR.forEach(function (a) {
+      var dk = 'oc' + a.replace('-', ''), v = e.getAttribute(a);
+      if (v == null && !(dk in e.dataset)) return;
+      if (!(dk in e.dataset)) e.dataset[dk] = v;
+      var nv = k === '||' ? e.dataset[dk] : mapStr(e.dataset[dk]);
+      if (nv !== v) e.setAttribute(a, nv);
+    });
+    e.dataset.ocK = k;
+  }
+  /* recolour every slide or page inside root (only inside them, so scaling and page-turn styles are never touched) */
+  function recolor(root) {
+    if (!brand || !root || !root.querySelectorAll) return;
+    var k = brandKey(), scopes = [];
+    if (root.matches && root.matches('.page')) scopes.push(root);
+    Array.prototype.push.apply(scopes, root.querySelectorAll('.page'));
+    scopes.forEach(function (sc) {
+      recolorEl(sc, k);
+      var els = sc.querySelectorAll('[style],[fill],[stroke],[stop-color],[data-ocstyle],[data-ocfill],[data-ocstroke],[data-ocstopcolor]');
+      for (var i = 0; i < els.length; i++) recolorEl(els[i], k);
+    });
+  }
+  function lum(hex) { return hx2rgb(hex).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [.2126, .7152, .0722][i]; }, 0); }
+  function contrastWhite(hex) { return 1.05 / (lum(hex) + .05); }
+  function brandUI() {
+    document.querySelectorAll('#brandSet .bc-row').forEach(function (row) {
+      var k = row.getAttribute('data-bk'), v = brand[k], hex = row.querySelector('.bc-hex'), sw = row.querySelector('.bc-sw'), cr = row.querySelector('.bc-cr');
+      if (document.activeElement !== hex) hex.value = v ? v.slice(1) : '';
+      sw.value = (v || BRAND_REF[k]).toLowerCase();
+      if (k === 'a' || !v) { cr.textContent = ''; cr.className = 'bc-cr'; return; }
+      var c = contrastWhite(v), ok = c >= 4.5;
+      cr.textContent = (ok ? 'White text reads well (' : 'White text may be hard to read (') + c.toFixed(1) + ':1)' + (ok ? '' : (k === 's' ? '. Pick a darker colour.' : '. Try a darker shade.'));
+      cr.className = 'bc-cr ' + (ok ? 'ok' : 'lo');
+    });
+    var on = brand.p || brand.s || brand.a, onEl = document.getElementById('bcOn');
+    if (onEl) onEl.textContent = on ? 'Your colours are on every page, the downloads and the customer link.' : 'Using ZenduIT colours.';
+  }
+  function brandSave() { if (app.classList.contains('is-customer')) return; try { localStorage.setItem(BRAND_KEY, JSON.stringify(brand)); } catch (e) {} }
+  function brandLoad(src) { ['p', 's', 'a'].forEach(function (k) { brand[k] = bHex(src && src[k]); }); }
+  function setBrand(k, v) { v = bHex(v); if (brand[k] === v) return; brand[k] = v; bcache = {}; brandSave(); brandUI(); brandChanged(); }
+  (function initBrand() {
+    var pre = (function () { if (window.__BOOK) return window.__BOOK.brand || null; if (!app.classList.contains('is-customer')) return null; var q = new URLSearchParams(location.hash.length > 1 ? location.hash.slice(1) : location.search); return { p: q.get('bp'), s: q.get('bs'), a: q.get('ba') }; })();
+    if (pre) brandLoad(pre);
+    else { try { brandLoad(JSON.parse(localStorage.getItem(BRAND_KEY) || 'null')); } catch (e) {} }
+    document.querySelectorAll('#brandSet .bc-row').forEach(function (row) {
+      var k = row.getAttribute('data-bk'), hex = row.querySelector('.bc-hex'), sw = row.querySelector('.bc-sw');
+      sw.addEventListener('input', function () { setBrand(k, sw.value); hex.value = brand[k].slice(1); });
+      hex.addEventListener('input', function () { var v = hex.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6); if (v !== hex.value) hex.value = v; if (!v) setBrand(k, ''); else if (bHex(v) && v.length === 6) setBrand(k, v); });
+      hex.addEventListener('blur', function () { var v = bHex(hex.value); if (hex.value && !v) hex.value = brand[k] ? brand[k].slice(1) : ''; else if (v && v !== brand[k]) setBrand(k, v); brandUI(); });
+      hex.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); hex.blur(); } });
+    });
+    var rs = document.getElementById('bcReset');
+    if (rs) rs.addEventListener('click', function () { brand = { p: '', s: '', a: '' }; bcache = {}; brandSave(); brandUI(); brandChanged(); });
+    brandUI();
+  })();
+  function brandChanged() { apply(); }
 
   /* ---------- book ---------- */
   var VIEWS = ['Front cover', 'Pages 2–3', 'Pages 2–3', 'Back cover'];

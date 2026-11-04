@@ -1,6 +1,6 @@
 # ZenduONE sales kit
 
-Static site: one self-contained HTML file per demo, deck and brochure. Deployed with Vercel at https://zenduone-sales-kit.vercel.app (the older zenduone-demos.vercel.app address still works).
+Static site: one self-contained HTML file per demo, deck and brochure. Deployed with Vercel (project zenduone-sales-kit on the ZenduitTeam account, moved from Rae-Design on 4 Nov 2026) at https://zenduone-sales-kit.vercel.app (the older zenduone-demos.vercel.app address still works).
 
 - /shuttle — School & shuttle guided prototype
 - /waste — Waste guided prototype

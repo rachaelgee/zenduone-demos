@@ -176,6 +176,41 @@ button.bc-sw{display:block}
 
 .logo-thumb.dark{background:#011835}
 .field .hint{display:block;margin-top:6px;font-size:12px;color:#5B6B80}
+
+/* personalise sections: collapsible, each header always shows what is inside */
+.ps-tools { display: flex; justify-content: flex-end; margin: -4px 0 -6px; }
+.ps-all { font: inherit; font-size: 12px; font-weight: 600; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 4px 2px; min-height: 32px; }
+.ps-all:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--focus); border-radius: 6px; }
+.ps { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); min-width: 0; }
+.ps > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 52px; box-sizing: border-box; border-radius: 12px; }
+.ps > summary::-webkit-details-marker { display: none; }
+.ps > summary:hover { background: color-mix(in srgb, var(--line) 25%, transparent); }
+.ps > summary:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus); }
+.ps[open] > summary { border-bottom: 1px solid var(--line); border-radius: 12px 12px 0 0; }
+.ps-n { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 700; display: grid; place-items: center; box-sizing: border-box; }
+.ps-n i { font-style: normal; }
+.ps-n .ps-ok { display: none; width: 14px; height: 14px; }
+.ps.is-done .ps-n { background: #12B76A; border-color: #12B76A; color: #FFFFFF; }
+.ps.is-done .ps-n i { display: none; }
+.ps.is-done .ps-n .ps-ok { display: block; }
+.ps-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.ps-t b { font-size: 14px; font-weight: 700; color: var(--ink); }
+.ps-t b em { font-style: normal; font-weight: 400; font-size: 12px; color: var(--muted); }
+.ps-s { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 15px; }
+.ps-s.warn { color: #B54708; font-weight: 600; }
+.ps-sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 3px; box-shadow: inset 0 0 0 1px rgba(1,24,53,.2); }
+.ps-chev { flex: none; width: 18px; height: 18px; color: var(--muted); transition: transform 150ms; }
+.ps[open] > summary .ps-chev { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .ps-chev { transition: none; } }
+.ps-body { padding: 14px 12px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.ps .brandset, .ps .needset, .ps .grp { border-top: 0 !important; padding-top: 0 !important; margin: 0; }
+.ps .brandset > legend, .ps .needset > legend, .ps .grp > legend { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; padding: 0; }
+.bc-a11y { display: flex; gap: 6px; align-items: flex-start; margin: 2px 0 0; font-size: 12px; line-height: 1.45; color: var(--muted); }
+.bc-a11y svg { flex: none; width: 14px; height: 14px; margin-top: 1px; color: #12B76A; }
+.bc-a11y[hidden] { display: none; }
+.bc-a11y b { color: var(--ink); font-weight: 600; }
+.bc-a11y.is-low { color: var(--ink); background: color-mix(in srgb, #F79009 12%, transparent); border-radius: 8px; padding: 8px 10px; }
+.bc-a11y.is-low svg { color: #B54708; }
 </style>
 
 <header class="topbar">
@@ -521,9 +556,15 @@ button.bc-sw{display:block}
   <form class="panel" id="panel" novalidate>
     <h2>Personalise for your customer</h2>
     <p class="lede">This is the approved Zenduit Waste value proposition. Add your customer and your details: the customer and your logo appear at the top of every page, and your next step and contact details on the back page.</p>
-    <div class="field" data-req><label for="f-customer" id="l-customer">District name</label><input id="f-customer" name="customer" maxlength="60" autocomplete="off" placeholder="Maple Valley School District"></div>
+    <div class="ps-tools"><button type="button" class="ps-all" id="psAll">Expand all</button></div>
+    <details class="ps" data-ps="fields"><summary><span class="ps-n"><i>1</i><svg class="ps-ok" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ps-t"><b>Your customer</b><span class="ps-s" aria-live="polite"></span></span><svg class="ps-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="ps-body">
+<div class="field" data-req><label for="f-customer" id="l-customer">District name</label><input id="f-customer" name="customer" maxlength="60" autocomplete="off" placeholder="Maple Valley School District"></div>
     <div class="field" data-req><label for="f-next" id="l-next">Proposed next step</label><textarea id="f-next" name="next" maxlength="120" placeholder="A 30-minute walkthrough with your transportation team"></textarea></div>
-    <div class="row2">
+</div></details>
+    <details class="ps" data-ps="fields"><summary><span class="ps-n"><i>2</i><svg class="ps-ok" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ps-t"><b>Your details</b><span class="ps-s" aria-live="polite"></span></span><svg class="ps-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="ps-body">
+<div class="row2">
       <div class="field" data-req><label for="f-seller">Your name</label><input id="f-seller" name="seller" maxlength="50" autocomplete="off" placeholder="Jordan Lee"></div>
       <div class="field" data-req><label for="f-date">Date</label><input id="f-date" name="date" maxlength="30" autocomplete="off" placeholder="November 2026"></div>
     </div>
@@ -531,7 +572,10 @@ button.bc-sw{display:block}
       <div class="field" data-req><label for="f-email">Email</label><input id="f-email" name="email" type="email" maxlength="80" autocomplete="off" placeholder="jordan@acmefleet.com"></div>
       <div class="field" data-req><label for="f-phone">Phone</label><input id="f-phone" name="phone" maxlength="30" autocomplete="off" placeholder="+1 555 010 0100"></div>
     </div>
-    <div class="field">
+</div></details>
+    <details class="ps" data-ps="logo" data-opt><summary><span class="ps-n"><i>3</i><svg class="ps-ok" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ps-t"><b>Your logo <em>optional</em></b><span class="ps-s" aria-live="polite"></span></span><svg class="ps-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="ps-body">
+<div class="field">
       <label for="f-logo">Your logo for light slides (optional, PNG, JPG or SVG)</label>
       <div class="logo-row">
         <input id="f-logo" type="file" accept="image/png,image/jpeg,image/svg+xml">
@@ -549,14 +593,19 @@ button.bc-sw{display:block}
       <small class="hint">Without it, dark slides show your light-slide logo on a white tile.</small>
     </div>
     <div class="field lgsize" id="lgSizeRow" hidden><label for="f-lgsize">Logo size on the cover and last page <output id="lgSizeOut">100%</output></label><input id="f-lgsize" type="range" min="70" max="140" step="5" value="100"><small class="hint">Drag to make your logo bigger or smaller. 100% is the standard size.</small></div>
-    <fieldset class="brandset" id="brandSet"><legend>Brand colours <em>optional</em></legend>
+</div></details>
+    <details class="ps" data-ps="brand" data-opt><summary><span class="ps-n"><i>4</i><svg class="ps-ok" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ps-t"><b>Brand colours <em>optional</em></b><span class="ps-s" aria-live="polite"></span></span><svg class="ps-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="ps-body">
+<fieldset class="brandset" id="brandSet"><legend>Brand colours <em>optional</em></legend>
       <p class="bhint">Use your brand colours on every slide. The layout, images and approved copy stay the same.</p>
       <label class="bc-logo" for="bcLogo"><input type="checkbox" id="bcLogo"><span>Use my logo’s colours<small id="bcLogoNote">Picks primary, secondary and accent from your logo. You can still adjust them below.</small></span></label>
       <div class="bc-row" data-bk="p"><label for="bc-p">Primary<small>Headings, icons and highlights</small></label><div class="bc-in"><button type="button" class="bc-sw" aria-label="Open the primary colour picker" aria-haspopup="dialog" aria-expanded="false"></button><span class="bc-tag">HEX</span><span class="bc-hash">#</span><input class="bc-hex" id="bc-p" maxlength="24" autocomplete="off" spellcheck="false" placeholder="136AB6"></div><small class="bc-cr" aria-live="polite"></small></div>
       <div class="bc-row" data-bk="s"><label for="bc-s">Secondary<small>Dark backgrounds, so choose a dark colour</small></label><div class="bc-in"><button type="button" class="bc-sw" aria-label="Open the secondary colour picker" aria-haspopup="dialog" aria-expanded="false"></button><span class="bc-tag">HEX</span><span class="bc-hash">#</span><input class="bc-hex" id="bc-s" maxlength="24" autocomplete="off" spellcheck="false" placeholder="011835"></div><small class="bc-cr" aria-live="polite"></small></div>
       <div class="bc-row" data-bk="a"><label for="bc-a">Accent<small>Small highlights, lines and labels</small></label><div class="bc-in"><button type="button" class="bc-sw" aria-label="Open the accent colour picker" aria-haspopup="dialog" aria-expanded="false"></button><span class="bc-tag">HEX</span><span class="bc-hash">#</span><input class="bc-hex" id="bc-a" maxlength="24" autocomplete="off" spellcheck="false" placeholder="12D2E5"></div><small class="bc-cr" aria-live="polite"></small></div>
       <div class="bc-foot"><button type="button" class="bc-reset" id="bcReset">Reset to ZenduIT colours</button><span class="bc-on" id="bcOn"></span></div>
+      <p class="bc-a11y" id="bcA11y" aria-live="polite" hidden></p>
     </fieldset>
+</div></details>
     <p class="rule">Slide content is the approved product deck and can't be changed here. Don't add prices, results, savings or customer quotes in the next-step field.</p>
   </form>
 </main>
@@ -874,7 +923,7 @@ button.bc-sw{display:block}
       if (miss.length) {
         if (panel.hidden) toggle.click();
         say('Fill in: ' + miss.join(', ') + '.', true);
-        var first = panel.querySelector('.field.missing input, .field.missing textarea'); if (first) first.focus();
+        var first = panel.querySelector('.field.missing input, .field.missing textarea'); if (first) { var fd = first.closest('details'); if (fd) fd.open = true; first.focus(); }
         return;
       }
       if (!window.htmlToImage || !window.jspdf || !window.PptxGenJS) { say('The download tools did not load. Check your connection and reload the page.', true); return; }
@@ -989,11 +1038,17 @@ button.bc-sw{display:block}
   function famOf(h, s, l) {
     if (s >= .4 && h >= 195 && h <= 236) { if (l <= .26) return 's'; if (l >= .8) return s >= .45 ? 't' : null; return s >= .5 ? 'p' : null; }
     if (s >= .5 && h >= 170 && h < 195) return 'a';
+    if (s >= .8 && h >= 12 && h <= 35 && l >= .6 && l <= .85) return 'g'; /* warm decorative glow */
     return null;
   }
   function mapRGB(r, g, b) {
     var key = r + ',' + g + ',' + b; if (key in bcache) return bcache[key];
     var o = rgb2hsl(r, g, b), f = famOf(o[0], o[1], o[2]), out = null;
+    if (f === 'g') { /* the warm glow takes the accent's hue (else primary's), keeping its soft lightness */
+      var G = brand.a || brand.p || brand.s;
+      if (G) { var NG = rgb2hsl.apply(null, hx2rgb(G)); out = hsl2rgb(NG[0], NG[1] < .12 ? NG[1] : bclamp(Math.max(NG[1], .6), 0, 1), o[2]); }
+      return (bcache[key] = out);
+    }
     if (f) {
       var fam = f === 't' ? 'p' : f, B = brand[fam];
       if (B) {
@@ -1015,6 +1070,7 @@ button.bc-sw{display:block}
   function recolorEl(e, k) {
     if (e.dataset.ocK === k) return;
     if (e.tagName === 'IMG' || e.hasAttribute('data-logo-slot')) { e.dataset.ocK = k; return; }
+    e.removeAttribute('data-a11y'); e.removeAttribute('data-a11y-low'); e.removeAttribute('data-a11y-bg');
     BATTR.forEach(function (a) {
       var dk = 'oc' + a.replace('-', ''), v = e.getAttribute(a);
       if (v == null && !(dk in e.dataset)) return;
@@ -1034,7 +1090,75 @@ button.bc-sw{display:block}
       recolorEl(sc, k);
       var els = sc.querySelectorAll('[style],[fill],[stroke],[stop-color],[data-ocstyle],[data-ocfill],[data-ocstroke],[data-ocstopcolor]');
       for (var i = 0; i < els.length; i++) recolorEl(els[i], k);
+      a11yPass(sc, k);
     });
+    a11yNote();
+  }
+  /* readability: whenever colours change, every text colour is checked against what sits behind it and nudged lighter or darker until it meets WCAG AA (4.5:1, or 3:1 for large text) */
+  function cParse(str) { var m = String(str).match(/rgba?\(([^)]+)\)/); if (!m) return null; var p = m[1].split(',').map(parseFloat); return { c: [p[0], p[1], p[2]], a: p.length > 3 ? p[3] : 1 }; }
+  function relLum(c) { return c.map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [.2126, .7152, .0722][i]; }, 0); }
+  function cRatio(a, b) { var x = relLum(a), y = relLum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); }
+  function bgBehind(el, sc) {
+    for (var n = el; n; n = n.parentElement) {
+      var cs = getComputedStyle(n), out = [];
+      if (/url\(/.test(cs.backgroundImage)) return null;
+      if (/gradient/.test(cs.backgroundImage)) (cs.backgroundImage.match(/rgba?\([^)]+\)/g) || []).forEach(function (t) { var q = cParse(t); if (q && q.a >= .35) out.push(q.c); });
+      var b = cParse(cs.backgroundColor); if (b && b.a >= .5) out.push(b.c);
+      if (out.length) return { cols: out, el: n };
+      if (n === sc) break;
+    }
+    return { cols: [[255, 255, 255]], el: sc };
+  }
+  function a11yPass(sc, k) {
+    if (sc.dataset.a11yK === k) return; sc.dataset.a11yK = k;
+    if (k === '||') return;
+    for (var round = 0; round < 3; round++) {
+    var bgChanged = false, seen = [], w = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT), t;
+    while ((t = w.nextNode())) {
+      var el = t.parentElement; if (!el || !t.nodeValue.trim() || seen.indexOf(el) > -1 || el.closest('svg')) continue; seen.push(el);
+      var cs = getComputedStyle(el), fc = cParse(cs.color); if (!fc || fc.a < .5) continue;
+      var bg = bgBehind(el, sc); if (!bg) continue;
+      var px = parseFloat(cs.fontSize) || 16, wt = parseInt(cs.fontWeight, 10) || 400, need = (px >= 24 || (px >= 18.66 && wt >= 700)) ? 3 : 4.5;
+      var worst = function (c) { var m = 99; bg.cols.forEach(function (b) { m = Math.min(m, cRatio(c, b)); }); return m; };
+      if (worst(fc.c) >= need) continue;
+      var hs = rgb2hsl(fc.c[0], fc.c[1], fc.c[2]), best = null, bestD = 9, top = null, topC = 0;
+      for (var L = 0; L <= 1.0001; L += .02) { var c = hsl2rgb(hs[0], hs[1], L), q = worst(c); if (q >= need && Math.abs(L - hs[2]) < bestD) { best = c; bestD = Math.abs(L - hs[2]); } if (q > topC) { topC = q; top = c; } }
+      if (!best && top && bg.el !== sc && /gradient/.test(getComputedStyle(bg.el).backgroundImage)) {
+        /* text on a card or pill that runs light to dark: deepen (or lighten) only the stops that fail, so the text can stay as it is */
+        var light = relLum(top) > .4, bi = getComputedStyle(bg.el).backgroundImage;
+        var nbi = bi.replace(/rgba?\([^)]+\)/g, function (m) {
+          var q = cParse(m); if (!q || q.a < .35 || cRatio(top, q.c) >= need) return m;
+          var h2 = rgb2hsl(q.c[0], q.c[1], q.c[2]), L2 = h2[2], c2 = q.c;
+          for (var g = 0; g < 50 && cRatio(top, c2) < need; g++) { L2 = bclamp(L2 + (light ? -.02 : .02), 0, 1); c2 = hsl2rgb(h2[0], h2[1], L2); }
+          return q.a < 1 ? 'rgba(' + c2.join(',') + ',' + q.a + ')' : 'rgb(' + c2.join(',') + ')';
+        });
+        if (!('ocstyle' in bg.el.dataset)) bg.el.dataset.ocstyle = bg.el.getAttribute('style') || '';
+        bg.el.style.backgroundImage = nbi; bg.el.setAttribute('data-a11y-bg', ''); best = top; bgChanged = true;
+      }
+      var nc = best || top; if (!nc) continue;
+      if (!('ocstyle' in el.dataset)) el.dataset.ocstyle = el.getAttribute('style') || '';
+      el.style.color = 'rgb(' + nc.join(',') + ')'; el.setAttribute('data-a11y', '');
+      if (!best) el.setAttribute('data-a11y-low', ''); else el.removeAttribute('data-a11y-low');
+    }
+    if (!bgChanged) break;
+    }
+  }
+  function a11yNote() {
+    var p = document.getElementById('bcA11y'); if (!p) return;
+    if (brandKey() === '||') { p.hidden = true; return; }
+    var fixed = {}, low = {}, nf = 0, nl = 0, ex = '';
+    document.querySelectorAll('[data-a11y]').forEach(function (e) {
+      if (e.closest('#renderStage') || e.closest('#present')) return;
+      var t = e.textContent.trim().slice(0, 40);
+      if (e.hasAttribute('data-a11y-low')) { if (!low[t]) { low[t] = 1; nl++; if (!ex) ex = t; } } else if (!fixed[t]) { fixed[t] = 1; nf++; }
+    });
+    p.hidden = false; p.classList.toggle('is-low', nl > 0);
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var ok = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var warn = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l6 11H2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6.5v3.2M8 11.6v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+    p.innerHTML = nl
+      ? warn + '<span><b>Readability:</b> ' + nl + ' text item' + (nl === 1 ? '' : 's') + ', such as “' + esc(ex) + '”, can’t reach WCAG AA contrast with these colours, usually because a background runs from light to dark. A darker primary or secondary fixes this.' + (nf ? ' ' + nf + ' other text colour' + (nf === 1 ? ' was' : 's were') + ' adjusted.' : '') + '</span>'
+      : ok + '<span><b>Readability checked:</b> ' + (nf ? nf + ' text colour' + (nf === 1 ? ' was' : 's were') + ' adjusted so all text meets WCAG AA contrast.' : 'all text meets WCAG AA contrast with these colours.') + '</span>';
   }
   function lum(hex) { return hx2rgb(hex).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [.2126, .7152, .0722][i]; }, 0); }
   function contrastWhite(hex) { return 1.05 / (lum(hex) + .05); }
@@ -1154,6 +1278,58 @@ button.bc-sw{display:block}
     if (was) { box.checked = true; note.textContent = 'Using your logo’s colours. Change any of them below to fine-tune.'; }
   })();
 
+  /* personalise sections */
+  (function () {
+    var secs = [].slice.call(document.querySelectorAll('details.ps')); if (!secs.length) return;
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var txt = function (b) { return [].slice.call(b.querySelectorAll('input:not([type=file]):not([type=range]):not([type=checkbox]):not(.bc-hex), textarea')); };
+    function info(d) {
+      var kind = d.getAttribute('data-ps'), b = d.querySelector('.ps-body'), s = '', done = false, warn = false, used = false;
+      if (kind === 'fields') {
+        var ins = txt(b), f = ins.filter(function (i) { return i.value.trim(); });
+        done = f.length === ins.length; used = f.length > 0; warn = !!b.querySelector('.missing');
+        s = (f[0] ? esc(f[0].value.trim()) + ' · ' : '') + (done ? 'All filled' : f.length + ' of ' + ins.length + ' filled');
+      } else if (kind === 'example') {
+        var n = txt(b).filter(function (i) { return i.value.trim(); }).length; used = done = n > 0;
+        s = n ? n + ' added' : 'Using the example names';
+      } else if (kind === 'needs') {
+        var c = b.querySelectorAll('input[type=checkbox]:checked').length; used = done = c > 0;
+        s = c ? c + ' picked for the setup slide' : 'None picked';
+      } else if (kind === 'logo') {
+        var l = document.getElementById('logoThumb'), dk = document.getElementById('logoThumbDark'), r = document.getElementById('f-lgsize');
+        var hl = l && !l.hidden, hd = dk && !dk.hidden; used = done = hl || hd;
+        s = used ? (hl ? 'Logo added' : 'Dark logo added') + (hl && hd ? ' · dark version too' : '') + (r && r.value !== '100' ? ' · ' + r.value + '% size' : '') : 'No logo yet';
+      } else if (kind === 'brand') {
+        var set = brandKey() !== '||', sw = '';
+        if (set) ['p', 's', 'a'].forEach(function (k) { var v = brand[k] || BRAND_REF[k]; sw += '<span class="ps-sw" style="background:' + esc(v) + '"></span>'; });
+        var lg = document.getElementById('bcLogo'); used = done = set;
+        s = set ? sw + ' ' + (lg && lg.checked ? 'From your logo' : 'Your colours') : 'ZenduIT colours';
+      }
+      return { s: s, done: done, warn: warn, used: used };
+    }
+    function update() {
+      secs.forEach(function (d) {
+        var i = info(d), el = d.querySelector('.ps-s');
+        if (el.innerHTML !== i.s) el.innerHTML = i.s;
+        el.classList.toggle('warn', i.warn); d.classList.toggle('is-done', i.done);
+        if (i.warn && !d.open) d.open = true;
+      });
+      allBtn();
+    }
+    var all = document.getElementById('psAll');
+    function allBtn() { if (all) all.textContent = secs.every(function (d) { return d.open; }) ? 'Collapse all' : 'Expand all'; }
+    if (all) all.addEventListener('click', function () { var open = !secs.every(function (d) { return d.open; }); secs.forEach(function (d) { d.open = open; }); allBtn(); });
+    secs.forEach(function (d) { d.addEventListener('toggle', allBtn); });
+    /* first visit: sections you still need to fill are open, optional ones stay closed with their status showing */
+    secs.forEach(function (d) { var i = info(d); d.open = d.hasAttribute('data-opt') ? false : !i.done; });
+    if (!secs.some(function (d) { return d.open; })) secs[0].open = true;
+    var queued = false, q = function () { if (queued) return; queued = true; requestAnimationFrame(function () { queued = false; update(); }); };
+    ['input', 'change', 'click'].forEach(function (ev) { document.addEventListener(ev, q, true); });
+    var mo = new MutationObserver(q);
+    ['logoThumb', 'logoThumbDark'].forEach(function (id) { var e = document.getElementById(id); if (e) mo.observe(e, { attributes: true }); });
+    document.querySelectorAll('.bc-sw, .field').forEach(function (e) { mo.observe(e, { attributes: true, attributeFilter: ['style', 'class'] }); });
+    update();
+  })();
   /* brand picker v2 */
   function parseColour(v) {
     v = String(v || '').trim();

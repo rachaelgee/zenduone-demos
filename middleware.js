@@ -76,11 +76,11 @@ export default async function middleware(request) {
   if (request.method === 'POST' && url.searchParams.has('__unlock')) {
     let code = '';
     // read the body as text: request.formData() isn't reliable in Vercel's middleware runtime
-    try { code = String(new URLSearchParams(await request.text()).get('code') || '').trim(); } catch (e) {}
+    try { code = String(new URLSearchParams(await request.text()).get('code') || '').replace(/\s+/g, ''); } catch (e) {}
     const hit = (itemCode && same(code.toLowerCase(), String(itemCode).toLowerCase())) ? key
       : (allCode && same(code.toLowerCase(), String(allCode).toLowerCase())) ? 'all' : '';
     if (!hit) {
-      await new Promise((r) => setTimeout(r, 900)); // slow down guessing
+      await new Promise((r) => setTimeout(r, 1500)); // slow down guessing
       return new Response(JSON.stringify({ ok: false }), { status: 401, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
     }
     const exp = Date.now() + DAYS * 864e5;
@@ -98,13 +98,13 @@ export default async function middleware(request) {
   if (itemCode && await valid(key, itemCode, cookie(request, 'zk_' + key))) return;
   if (allCode && await valid('all', allCode, cookie(request, 'zk_all'))) return;
 
-  return new Response(gate(key === 'all' ? 'ZenduONE sales kit' : ITEMS[key][0]), {
+  return new Response(gate(key === 'all' ? 'ZenduONE sales kit' : ITEMS[key][0], key === 'all'), {
     status: 401,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' },
   });
 }
 
-function gate(title) {
+function gate(title, team) {
   const t = title.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>${t}</title>
@@ -118,32 +118,60 @@ body{background:radial-gradient(1200px 600px at 50% -10%,#E3F0FB 0,var(--bg) 60%
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
 h1{font-size:24px;line-height:1.2;margin:0 0 8px;font-weight:650;letter-spacing:-.01em}
 p.hint{margin:0 0 22px;color:var(--muted);font-size:15px}
-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
-.row{display:flex;gap:8px}
-input{flex:1;min-width:0;height:46px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;color:var(--ink);background:#fff;outline:none}
-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(19,106,182,.15)}
-button{height:46px;padding:0 20px;border:0;border-radius:12px;background:var(--blue);color:#fff;font:600 15px/1 inherit;font-family:inherit;cursor:pointer}
-button:disabled{opacity:.6;cursor:default}
+.label{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+.boxes{display:flex;gap:8px}
+.boxes input{width:0;flex:1;height:58px;text-align:center;font:600 24px/1 inherit;font-family:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:12px;background:#fff;outline:none;caret-color:var(--blue);padding:0}
+.boxes input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(19,106,182,.15)}
+.boxes.bad input{border-color:var(--err)}
+.pw{display:flex;gap:8px}
+.pw input{flex:1;min-width:0;height:48px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;color:var(--ink);background:#fff;outline:none}
+.pw input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(19,106,182,.15)}
+button.go{height:48px;padding:0 20px;border:0;border-radius:12px;background:var(--blue);color:#fff;font:600 15px/1 inherit;font-family:inherit;cursor:pointer}
+button.go:disabled{opacity:.6;cursor:default}
 .err{min-height:22px;margin:10px 0 0;color:var(--err);font-size:14px}
+.swap{background:none;border:0;padding:0;margin-top:4px;font:inherit;font-size:13px;color:var(--blue);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .foot{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+[hidden]{display:none!important}
 </style></head><body>
 <main class="card">
 <img class="logo" src="/img/zenduone-logo.png" alt="ZenduONE">
-<p class="eyebrow">Protected link</p>
+<p class="eyebrow">${team ? 'ZenduIT team only' : 'Protected link'}</p>
 <h1>${t}</h1>
-<p class="hint">Enter the passcode you were given to open it.</p>
-<form id="f" method="post" action="?__unlock=1">
-<label for="code">Passcode</label>
-<div class="row"><input id="code" name="code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required autofocus><button id="b" type="submit">Open</button></div>
-<p class="err" id="e" role="alert" aria-live="polite"></p>
+<p class="hint" id="hint">${team ? 'Enter the team password to open it.' : 'Enter the 6-digit passcode you were given to open it.'}</p>
+<form id="codeForm"${team ? ' hidden' : ''} novalidate>
+<span class="label" id="codeLabel">Passcode</span>
+<div class="boxes" id="boxes" role="group" aria-labelledby="codeLabel">
+${[1, 2, 3, 4, 5, 6].map((n) => `<input inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="${n === 1 ? 'one-time-code' : 'off'}" aria-label="Digit ${n} of 6">`).join('')}
+</div>
 </form>
-<p class="foot">Don't have a passcode? Ask the person who shared this link with you.</p>
+<form id="pwForm"${team ? '' : ' hidden'} novalidate>
+<label class="label" for="pw">Team password</label>
+<div class="pw"><input id="pw" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false"><button class="go" id="go" type="submit">Open</button></div>
+</form>
+<p class="err" id="e" role="alert" aria-live="polite"></p>
+${team ? '' : '<button class="swap" id="swap" type="button">ZenduIT team? Use the team password</button>'}
+<p class="foot">${team ? 'This page is for the ZenduIT team.' : 'Don\'t have a passcode? Ask the person who shared this link with you.'}</p>
 </main>
 <script>
-var f=document.getElementById('f'),b=document.getElementById('b'),e=document.getElementById('e'),i=document.getElementById('code');
-f.addEventListener('submit',function(ev){ev.preventDefault();b.disabled=true;e.textContent='';
-fetch(location.pathname+'?__unlock=1',{method:'POST',body:new URLSearchParams({code:i.value}),credentials:'same-origin'})
-.then(function(r){if(r.ok){location.reload();return;}b.disabled=false;e.textContent='That passcode doesn\\u2019t match. Check it and try again.';i.select();})
-.catch(function(){b.disabled=false;e.textContent='Something went wrong. Try again.';});});
+(function(){
+var boxes=[].slice.call(document.querySelectorAll('#boxes input')),wrap=document.getElementById('boxes'),e=document.getElementById('e'),busy=false;
+var pwForm=document.getElementById('pwForm'),codeForm=document.getElementById('codeForm'),pw=document.getElementById('pw'),go=document.getElementById('go'),swap=document.getElementById('swap'),hint=document.getElementById('hint');
+function send(code,done){if(busy)return;busy=true;e.textContent='';
+fetch(location.pathname+'?__unlock=1',{method:'POST',body:new URLSearchParams({code:code}),credentials:'same-origin'})
+.then(function(r){if(r.ok){location.reload();return;}busy=false;e.textContent=r.status===429||r.status===403?'Too many tries. Wait a few minutes, then try again.':'That doesn’t match. Check it and try again.';done(false);})
+.catch(function(){busy=false;e.textContent='Something went wrong. Try again.';done(false);});}
+function code(){return boxes.map(function(b){return b.value;}).join('');}
+function fill(str,from){var d=String(str).replace(/\\D/g,'').split('');for(var i=from;i<6&&d.length;i++)boxes[i].value=d.shift();var n=boxes.findIndex(function(b){return!b.value;});(boxes[n<0?5:n]).focus();check();}
+function check(){if(code().length===6){wrap.classList.remove('bad');boxes.forEach(function(b){b.disabled=true;});send(code(),function(){boxes.forEach(function(b){b.disabled=false;b.value='';});wrap.classList.add('bad');boxes[0].focus();});}}
+boxes.forEach(function(b,i){
+b.addEventListener('input',function(){var v=b.value.replace(/\\D/g,'');b.value='';if(v.length>1){fill(v,i);return;}if(v){b.value=v;wrap.classList.remove('bad');if(i<5)boxes[i+1].focus();check();}});
+b.addEventListener('keydown',function(ev){if(ev.key==='Backspace'&&!b.value&&i>0){boxes[i-1].value='';boxes[i-1].focus();ev.preventDefault();}else if(ev.key==='ArrowLeft'&&i>0){boxes[i-1].focus();}else if(ev.key==='ArrowRight'&&i<5){boxes[i+1].focus();}});
+b.addEventListener('paste',function(ev){var t=(ev.clipboardData||window.clipboardData).getData('text');if(t){ev.preventDefault();fill(t,i);}});
+b.addEventListener('focus',function(){b.select();});
+});
+pwForm.addEventListener('submit',function(ev){ev.preventDefault();if(!pw.value)return;go.disabled=true;send(pw.value,function(){go.disabled=false;pw.select();});});
+if(swap)swap.addEventListener('click',function(){var toPw=pwForm.hidden;pwForm.hidden=!toPw;codeForm.hidden=toPw;e.textContent='';swap.textContent=toPw?'Use a 6-digit passcode instead':'ZenduIT team? Use the team password';hint.textContent=toPw?'Enter the team password to open it.':'Enter the 6-digit passcode you were given to open it.';(toPw?pw:boxes[0]).focus();});
+(pwForm.hidden?boxes[0]:pw).focus();
+})();
 </script></body></html>`;
 }

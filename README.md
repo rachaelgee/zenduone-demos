@@ -17,7 +17,7 @@ Static site: one self-contained HTML file per demo, deck and brochure. Deployed 
 
 ## Passcodes
 
-Every demo, deck and brochure asks for its own passcode (`middleware.js`). The right code unlocks that item only, for 30 days in that browser. The home page and everything else need the internal "all" code, which opens every item.
+Every demo, deck and brochure asks for its own 6-digit passcode (`middleware.js`). The right code unlocks that item only, for 30 days in that browser. The home page and everything else need the ZenduIT team password (the "all" entry), which also opens every item.
 
 The codes are not in this repo. They live in the Vercel project's environment variables:
 

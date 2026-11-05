@@ -119,6 +119,13 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: non
 .bc-cr.ok{color:#067647}.bc-cr.lo{color:#B54708}
 .bc-cr:empty{display:none}
 .bc-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* logo colours */
+.bc-logo{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft,var(--bg));font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+.bc-logo input{margin:2px 0 0;width:16px;height:16px;accent-color:var(--accent);flex:none}
+.bc-logo span{display:flex;flex-direction:column;gap:2px}
+.bc-logo small{font-weight:400;color:var(--muted);font-size:12px;line-height:1.35}
+.bc-logo:has(input:checked){border-color:var(--accent);background:var(--surface)}
+.bc-logo:has(input:disabled){cursor:default;opacity:.75}
 .bc-reset{font:600 12.5px/1 var(--font);min-height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .bc-reset:hover{border-color:var(--accent)}
 .bc-on{font-size:11.5px;color:var(--muted)}
@@ -264,6 +271,7 @@ button.bc-sw{display:block}
     </div>
     <fieldset class="brandset" id="brandSet"><legend>Brand colours <em>optional</em></legend>
       <p class="bhint">Use your brand colours on every slide. The layout, images and approved copy stay the same.</p>
+      <label class="bc-logo" for="bcLogo"><input type="checkbox" id="bcLogo"><span>Use my logo’s colours<small id="bcLogoNote">Picks primary, secondary and accent from your logo. You can still adjust them below.</small></span></label>
       <div class="bc-row" data-bk="p"><label for="bc-p">Primary<small>Headings, icons and highlights</small></label><div class="bc-in"><button type="button" class="bc-sw" aria-label="Open the primary colour picker" aria-haspopup="dialog" aria-expanded="false"></button><span class="bc-tag">HEX</span><span class="bc-hash">#</span><input class="bc-hex" id="bc-p" maxlength="24" autocomplete="off" spellcheck="false" placeholder="136AB6"></div><small class="bc-cr" aria-live="polite"></small></div>
       <div class="bc-row" data-bk="s"><label for="bc-s">Secondary<small>Dark backgrounds, so choose a dark colour</small></label><div class="bc-in"><button type="button" class="bc-sw" aria-label="Open the secondary colour picker" aria-haspopup="dialog" aria-expanded="false"></button><span class="bc-tag">HEX</span><span class="bc-hash">#</span><input class="bc-hex" id="bc-s" maxlength="24" autocomplete="off" spellcheck="false" placeholder="011835"></div><small class="bc-cr" aria-live="polite"></small></div>
       <div class="bc-row" data-bk="a"><label for="bc-a">Accent<small>Small highlights, lines and labels</small></label><div class="bc-in"><button type="button" class="bc-sw" aria-label="Open the accent colour picker" aria-haspopup="dialog" aria-expanded="false"></button><span class="bc-tag">HEX</span><span class="bc-hash">#</span><input class="bc-hex" id="bc-a" maxlength="24" autocomplete="off" spellcheck="false" placeholder="12D2E5"></div><small class="bc-cr" aria-live="polite"></small></div>
@@ -642,6 +650,92 @@ button.bc-sw{display:block}
     if (rs) rs.addEventListener('click', function () { brand = { p: '', s: '', a: '' }; bcache = {}; brandSave(); brandUI(); brandChanged(); });
     brandUI();
   })();
+  /* logo colours */
+  (function logoColours() {
+    var box = document.getElementById('bcLogo'), note = document.getElementById('bcLogoNote');
+    if (!box) return;
+    var KEY = BRAND_KEY + '-fromlogo', applying = false, manual = null, lastSrc = '';
+    var NOTE = note.textContent;
+    function logoSrc() {
+      var a = document.getElementById('logoThumb'), b = document.getElementById('logoThumbDark');
+      if (a && !a.hidden && a.getAttribute('src')) return a.src;
+      if (b && !b.hidden && b.getAttribute('src')) return b.src;
+      return '';
+    }
+    function hex(r, g, b) { return '#' + [r, g, b].map(function (v) { return ('0' + Math.round(v).toString(16)).slice(-2); }).join('').toUpperCase(); }
+    function fromHsl(h, s, l) { var c = hsl2rgb(h, s, l); return hex(c[0], c[1], c[2]); }
+    function pick(src, cb) {
+      var img = new Image();
+      img.onload = function () {
+        var N = 96, sc = Math.min(N / img.width, N / img.height, 1), w = Math.max(1, Math.round(img.width * sc)), h = Math.max(1, Math.round(img.height * sc));
+        var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+        var cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, w, h);
+        var d; try { d = cx.getImageData(0, 0, w, h).data; } catch (e) { cb(null); return; }
+        var B = {}, total = 0;
+        for (var i = 0; i < d.length; i += 4) {
+          if (d[i + 3] < 200) continue;
+          var hs = rgb2hsl(d[i], d[i + 1], d[i + 2]);
+          if (hs[2] > 0.93) continue; // paper white
+          total++;
+          var k = (hs[1] < 0.12 ? 'g' + Math.round(hs[2] * 8) : Math.round(hs[0] / 20) + '|' + Math.round(hs[1] * 3) + '|' + Math.round(hs[2] * 6));
+          var o = B[k] || (B[k] = { n: 0, r: 0, g: 0, b: 0 });
+          o.n++; o.r += d[i]; o.g += d[i + 1]; o.b += d[i + 2];
+        }
+        if (!total) { cb(null); return; }
+        var C = Object.keys(B).map(function (k) { var o = B[k], c = [o.r / o.n, o.g / o.n, o.b / o.n], hs = rgb2hsl(c[0], c[1], c[2]); return { hex: hex(c[0], c[1], c[2]), h: hs[0], s: hs[1], l: hs[2], share: o.n / total }; })
+          .filter(function (c) { return c.share >= 0.02; });
+        var vivid = C.filter(function (c) { return c.s >= 0.25 && c.l > 0.18 && c.l < 0.8; })
+          .sort(function (a, b) { return b.share * (0.6 + b.s) - a.share * (0.6 + a.s); });
+        var hueGap = function (a, b) { var x = Math.abs(a - b) % 360; return Math.min(x, 360 - x); };
+        var p, s, a;
+        if (vivid.length) p = vivid[0];
+        else p = C.sort(function (x, y) { return y.share - x.share; })[0]; // one-colour logo
+        // primary must carry white text: darken until it reads (4.5:1)
+        var pl = p.l, ph = p.h, ps = p.s, P = p.hex;
+        while (contrastWhite(P) < 4.5 && pl > 0.12) { pl -= 0.03; P = fromHsl(ph, ps, pl); }
+        var dark = C.filter(function (c) { return c.l <= 0.3 && contrastWhite(c.hex) >= 10; }).sort(function (x, y) { return y.share - x.share; })[0];
+        s = dark ? dark.hex : fromHsl(ph, Math.min(Math.max(ps, 0.35), 0.75), 0.15);
+        var second = vivid.filter(function (c) { return hueGap(c.h, ph) >= 40; })[0];
+        a = second ? second.hex : ps < 0.12 ? '#A3ACB9' : fromHsl(ph, Math.min(1, Math.max(ps, 0.55) + 0.15), 0.58); // one-colour grey/black logo: neutral accent
+        cb({ p: P, s: s, a: a });
+      };
+      img.onerror = function () { cb(null); };
+      img.src = src;
+    }
+    function apply(on) {
+      var src = logoSrc();
+      if (!on) { note.textContent = NOTE; return; }
+      if (!src) { box.checked = false; note.textContent = 'Add your logo above first, then tick this.'; save(false); return; }
+      if (src === lastSrc && box.checked && brand.p) return;
+      pick(src, function (c) {
+        if (!c) { box.checked = false; note.textContent = 'Those colours couldn’t be read from this logo. Pick them below instead.'; save(false); return; }
+        lastSrc = src; applying = true;
+        brand = { p: c.p, s: c.s, a: c.a }; bcache = {}; brandSave(); brandUI(); brandChanged();
+        applying = false; note.textContent = 'Using your logo’s colours. Change any of them below to fine-tune.';
+      });
+    }
+    function save(on) { try { localStorage.setItem(KEY, on ? '1' : ''); } catch (e) {} }
+    box.addEventListener('change', function () {
+      if (box.checked) { manual = { p: brand.p, s: brand.s, a: brand.a }; save(true); lastSrc = ''; apply(true); }
+      else {
+        save(false); lastSrc = '';
+        brand = manual || { p: '', s: '', a: '' }; manual = null; bcache = {}; brandSave(); brandUI(); brandChanged(); apply(false);
+      }
+    });
+    // a hand-picked colour or a reset takes over from the logo
+    var _setBrand = setBrand;
+    setBrand = function (k, v) { if (!applying && box.checked) { box.checked = false; save(false); manual = null; note.textContent = NOTE; } return _setBrand(k, v); };
+    var rs = document.getElementById('bcReset');
+    if (rs) rs.addEventListener('click', function () { if (box.checked) { box.checked = false; save(false); manual = null; note.textContent = NOTE; } }, true);
+    // a new logo while ticked: recolour from it
+    ['logoThumb', 'logoThumbDark'].forEach(function (id) {
+      var el = document.getElementById(id); if (!el || !window.MutationObserver) return;
+      new MutationObserver(function () { if (box.checked) { lastSrc = ''; apply(true); } }).observe(el, { attributes: true, attributeFilter: ['src', 'hidden'] });
+    });
+    var was = ''; try { was = localStorage.getItem(KEY) || ''; } catch (e) {}
+    if (was) { box.checked = true; note.textContent = 'Using your logo’s colours. Change any of them below to fine-tune.'; }
+  })();
+
   /* brand picker v2 */
   function parseColour(v) {
     v = String(v || '').trim();

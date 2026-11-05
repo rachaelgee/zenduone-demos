@@ -17,11 +17,11 @@ Static site: one self-contained HTML file per demo, deck and brochure. Deployed 
 
 ## Passcodes
 
-Every demo, deck and brochure asks for its own 6-digit passcode (`middleware.js`). The right code unlocks that item only, for 30 days in that browser. The home page and everything else need the ZenduIT team password (the "all" entry), which also opens every item.
+Every demo, deck and brochure asks for its own 6-digit passcode (`middleware.js`). The right code unlocks that item only, for 30 days in that browser. The home page and everything else need the ZenduIT team password (the "all" entry), which also opens every item. A reseller password (the "reseller" entry) opens every item but not the home page.
 
 The codes are not in this repo. They live in the Vercel project's environment variables:
 
-- `SALES_KIT_PASSCODES`: JSON of item key to code (`shuttle`, `waste`, `waste-simulation`, `airport`, `live-map`, `fleet-safety`, `maintenance`, `deck-school-bus`, `deck-shuttle`, `deck-waste`, `brochure-zenbus`, `brochure-waste`, `all`).
+- `SALES_KIT_PASSCODES`: JSON of item key to code (`shuttle`, `waste`, `waste-simulation`, `airport`, `live-map`, `fleet-safety`, `maintenance`, `deck-school-bus`, `deck-shuttle`, `deck-waste`, `brochure-zenbus`, `brochure-waste`, `reseller`, `all`).
 - `SALES_KIT_SECRET`: signs the unlock cookies.
 
 To change or revoke a code, edit `SALES_KIT_PASSCODES` in Vercel and redeploy. Anyone who used the old code is asked again.

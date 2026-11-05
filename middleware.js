@@ -2,7 +2,9 @@
  * Passcode gate for the ZenduONE sales kit.
  * Every demo, deck and brochure has its own passcode. The right code unlocks that item only, for 30 days.
  * Codes live in the project's Vercel environment variables, never in this file:
- *   SALES_KIT_PASSCODES  JSON, e.g. {"shuttle":"...","deck-waste":"..."}  ("all" = internal code that opens everything, including the home page)
+ *   SALES_KIT_PASSCODES  JSON, e.g. {"shuttle":"...","deck-waste":"..."}
+ *                        "all" = ZenduIT team password: every item and the home page
+ *                        "reseller" = reseller password: every item, not the home page
  *   SALES_KIT_SECRET     random string used to sign the "unlocked" cookies
  * Changing a code locks out everyone who used the old one. Redeploy after changing a variable.
  */
@@ -71,20 +73,21 @@ export default async function middleware(request) {
   }
   const itemCode = key === 'all' ? '' : all[key];
   const allCode = all.all;
+  const resellerCode = key === 'all' ? '' : all.reseller; // resellers never get the home page
 
   // passcode submitted
   if (request.method === 'POST' && url.searchParams.has('__unlock')) {
     let code = '';
     // read the body as text: request.formData() isn't reliable in Vercel's middleware runtime
     try { code = String(new URLSearchParams(await request.text()).get('code') || '').replace(/\s+/g, ''); } catch (e) {}
-    const hit = (itemCode && same(code.toLowerCase(), String(itemCode).toLowerCase())) ? key
-      : (allCode && same(code.toLowerCase(), String(allCode).toLowerCase())) ? 'all' : '';
+    const is = (c) => c && same(code.toLowerCase(), String(c).toLowerCase());
+    const hit = is(itemCode) ? key : is(allCode) ? 'all' : is(resellerCode) ? 'reseller' : '';
     if (!hit) {
       await new Promise((r) => setTimeout(r, 1500)); // slow down guessing
       return new Response(JSON.stringify({ ok: false }), { status: 401, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
     }
     const exp = Date.now() + DAYS * 864e5;
-    const value = await token(hit, hit === 'all' ? allCode : itemCode, exp);
+    const value = await token(hit, hit === 'all' ? allCode : hit === 'reseller' ? resellerCode : itemCode, exp);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: {
@@ -97,6 +100,7 @@ export default async function middleware(request) {
   // already unlocked?
   if (itemCode && await valid(key, itemCode, cookie(request, 'zk_' + key))) return;
   if (allCode && await valid('all', allCode, cookie(request, 'zk_all'))) return;
+  if (resellerCode && await valid('reseller', resellerCode, cookie(request, 'zk_reseller'))) return;
 
   return new Response(gate(key === 'all' ? 'ZenduONE sales kit' : ITEMS[key][0], key === 'all'), {
     status: 401,
@@ -145,11 +149,11 @@ ${[1, 2, 3, 4, 5, 6].map((n) => `<input inputmode="numeric" pattern="[0-9]*" max
 </div>
 </form>
 <form id="pwForm"${team ? '' : ' hidden'} novalidate>
-<label class="label" for="pw">Team password</label>
+<label class="label" for="pw">${team ? 'Team password' : 'Password'}</label>
 <div class="pw"><input id="pw" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false"><button class="go" id="go" type="submit">Open</button></div>
 </form>
 <p class="err" id="e" role="alert" aria-live="polite"></p>
-${team ? '' : '<button class="swap" id="swap" type="button">ZenduIT team? Use the team password</button>'}
+${team ? '' : '<button class="swap" id="swap" type="button">Have a reseller or team password?</button>'}
 <p class="foot">${team ? 'This page is for the ZenduIT team.' : 'Don\'t have a passcode? Ask the person who shared this link with you.'}</p>
 </main>
 <script>
@@ -170,7 +174,7 @@ b.addEventListener('paste',function(ev){var t=(ev.clipboardData||window.clipboar
 b.addEventListener('focus',function(){b.select();});
 });
 pwForm.addEventListener('submit',function(ev){ev.preventDefault();if(!pw.value)return;go.disabled=true;send(pw.value,function(){go.disabled=false;pw.select();});});
-if(swap)swap.addEventListener('click',function(){var toPw=pwForm.hidden;pwForm.hidden=!toPw;codeForm.hidden=toPw;e.textContent='';swap.textContent=toPw?'Use a 6-digit passcode instead':'ZenduIT team? Use the team password';hint.textContent=toPw?'Enter the team password to open it.':'Enter the 6-digit passcode you were given to open it.';(toPw?pw:boxes[0]).focus();});
+if(swap)swap.addEventListener('click',function(){var toPw=pwForm.hidden;pwForm.hidden=!toPw;codeForm.hidden=toPw;e.textContent='';swap.textContent=toPw?'Use a 6-digit passcode instead':'Have a reseller or team password?';hint.textContent=toPw?'Enter your reseller or team password to open it.':'Enter the 6-digit passcode you were given to open it.';(toPw?pw:boxes[0]).focus();});
 (pwForm.hidden?boxes[0]:pw).focus();
 })();
 </script></body></html>`;

@@ -75,17 +75,13 @@ export default async function middleware(request) {
   // passcode submitted
   if (request.method === 'POST' && url.searchParams.has('__unlock')) {
     let code = '';
-    let how = 'none';
-    try {
-      const raw = await request.text();
-      how = 'text:' + raw.length;
-      code = String(new URLSearchParams(raw).get('code') || '').trim();
-    } catch (e) { how = 'err:' + (e && e.name); }
+    // read the body as text: request.formData() isn't reliable in Vercel's middleware runtime
+    try { code = String(new URLSearchParams(await request.text()).get('code') || '').trim(); } catch (e) {}
     const hit = (itemCode && same(code.toLowerCase(), String(itemCode).toLowerCase())) ? key
       : (allCode && same(code.toLowerCase(), String(allCode).toLowerCase())) ? 'all' : '';
     if (!hit) {
       await new Promise((r) => setTimeout(r, 900)); // slow down guessing
-      return new Response(JSON.stringify({ ok: false, d: how + ' len:' + code.length + ' item:' + key + ' has:' + (itemCode ? String(itemCode).length : 0) }), { status: 401, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+      return new Response(JSON.stringify({ ok: false }), { status: 401, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
     }
     const exp = Date.now() + DAYS * 864e5;
     const value = await token(hit, hit === 'all' ? allCode : itemCode, exp);

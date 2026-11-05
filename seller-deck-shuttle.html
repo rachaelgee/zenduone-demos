@@ -698,7 +698,6 @@ button.bc-sw{display:block}
     var hw = [], sw = [], cam = false;
     SETUP.needs.forEach(function (n) { if (needs.indexOf(n.k) < 0) return; n.hw.forEach(function (h) { if (hw.indexOf(h) < 0) hw.push(h); }); n.sw.forEach(function (x) { if (sw.indexOf(x) < 0) sw.push(x); }); });
     hw.forEach(function (h) { if (SETUP.hw[h].cam) cam = true; });
-    if (cam) hw = hw.filter(function (h) { return h !== 'gps'; });
     var order = ['road', 'driver', 'cabin', 'rear', 'door', 'counter', 'gps'], sorder = ['driver', 'rider', 'qr', 'eta', 'otp', 'occupancy'];
     hw.sort(function (a, b) { return order.indexOf(a) - order.indexOf(b); }); sw.sort(function (a, b) { return sorder.indexOf(a) - sorder.indexOf(b); });
     return { hw: hw, sw: sw, cam: cam };
@@ -737,7 +736,7 @@ button.bc-sw{display:block}
     var S = 1080 / 768, OX = -15, n = hw.length;
     var pt = function (h) { var p = SETUP.xr[h]; return [Math.round(OX + p[0] * S), Math.round(p[1] * S)]; };
     (function untangle() {
-      var RHx = n > 4 ? 64 : 76, ry = function (i) { return 196 + 74 + i * (RHx + 6) + RHx / 2; };
+      var RHx = n > 6 ? 54 : n > 4 ? 64 : 76, ry = function (i) { return 196 + 74 + i * (RHx + 6) + RHx / 2; };
       var cross = function (a, b, c, d) { var o = function (p, q, r) { return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); }; return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
       var best = null, bestN = 1e9, bestL = 1e18;
       var perm = function (arr, k) {
@@ -767,7 +766,7 @@ button.bc-sw{display:block}
       '<h2 style="font-size:50px;font-weight:600;line-height:1.08;letter-spacing:-1px;margin-top:10px;color:#FFFFFF">' + cust + '’s shuttle, inside and out.</h2>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">' + SETUP.needs.filter(function (q) { return needs.indexOf(q.k) > -1; }).map(function (q) { return '<span style="font-size:15px;font-weight:600;color:#DCEEFC;background:rgba(19,106,182,0.35);border:1px solid rgba(185,212,247,0.35);border-radius:999px;padding:5px 12px">' + esc(q.chip) + '</span>'; }).join('') + '</div></div>';
     /* right panel geometry */
-    var PX = 1320, PY = 196, PW = 472, RH = n > 4 ? 64 : 76, RG = 6, R0 = PY + 74;
+    var PX = 1320, PY = 196, PW = 472, RH = n > 6 ? 54 : n > 4 ? 64 : 76, RG = 6, R0 = PY + 74;
     var rowY = function (i) { return R0 + i * (RH + RG) + RH / 2; };
     var swTop = R0 + n * (RH + RG) + 14, swRows = Math.ceil(sw.length / 3), PH = (sw.length ? swTop + 30 + swRows * 52 - 6 : swTop - 6) - PY + 18;
     var FA = [PX, PY + 76 + 135]; /* where play-mode lines meet the focus card */

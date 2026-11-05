@@ -122,6 +122,7 @@ body { background: radial-gradient(circle at 50% 35%, var(--bg) 0%, var(--bg-dee
 .outrow input { width: 100%; font: 400 12px/1.4 var(--font); padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); box-sizing: border-box; }
 .outrow .status { text-align: center; }
 html.is-customer #togglePanel, html.is-customer #copy, html.is-customer .outrow input { display: none !important; }
+#copy[hidden] { display: none !important; }
 html.is-book #dlBook { display: none !important; }
 @media (max-width: 1100px) { .panel { max-width: none; flex-basis: 100%; } }
 @media (max-width: 560px) { .row2.nd, .row2.logos { grid-template-columns: minmax(0, 1fr); } .topbar .btn { padding: 0 10px; } }
@@ -204,7 +205,8 @@ button.bc-sw{display:block}
       <button type="button" id="dlBook">Flip book (.html)<small>Turns like paper, opens in any browser</small></button>
     </div>
   </div>
-  <button class="btn primary" id="copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Copy customer link</button>
+  <!-- Customer link: hidden for now (5 Nov 2026). Remove "hidden" and the [hidden] rule below to bring it back. -->
+  <button class="btn primary" id="copy" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Copy customer link</button>
 </header>
 <div class="app" id="app">
   <section class="viewer" aria-label="ZenBUS brochure">
@@ -235,7 +237,7 @@ button.bc-sw{display:block}
 
   <aside class="panel" id="panel" aria-labelledby="panelTitle">
     <h2 id="panelTitle">Personalise for your customer</h2>
-    <p class="lede">Fill in what you need. The brochure updates as you type, and the downloads and the customer link use exactly what you see. Turn off Personalise for a generic brochure.</p>
+    <p class="lede">Fill in what you need. The brochure updates as you type, and the downloads use exactly what you see. Turn off Personalise for a generic brochure.</p>
     <form id="form" class="linkout" novalidate>
       <fieldset class="grp" id="custGrp">
         <legend>Your customer</legend>
@@ -773,7 +775,7 @@ button.bc-sw{display:block}
       cr.className = 'bc-cr ' + (ok ? 'ok' : 'lo');
     });
     var on = brand.p || brand.s || brand.a, onEl = document.getElementById('bcOn');
-    if (onEl) onEl.textContent = on ? 'Your colours are on every page, the downloads and the customer link.' : 'Using ZenduIT colours.';
+    if (onEl) onEl.textContent = on ? 'Your colours are on every page and in the downloads.' : 'Using ZenduIT colours.';
   }
   function brandSave() { if (app.classList.contains('is-customer')) return; try { localStorage.setItem(BRAND_KEY, JSON.stringify(brand)); } catch (e) {} }
   function brandLoad(src) { ['p', 's', 'a'].forEach(function (k) { brand[k] = bHex(src && src[k]); }); }

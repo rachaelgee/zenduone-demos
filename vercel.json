@@ -15,6 +15,10 @@
       "destination": "/zenduwork-waste-simulation"
     },
     {
+      "source": "/man-down",
+      "destination": "/zenduone-man-down-simulation"
+    },
+    {
       "source": "/airport",
       "destination": "/zenduone-airport-prototype"
     },

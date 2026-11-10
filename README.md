@@ -22,7 +22,8 @@ Every demo, deck and brochure asks for its own 6-digit passcode (`middleware.js`
 The codes are not in this repo. They live in the Vercel project's environment variables:
 
 - `SALES_KIT_PASSCODES`: JSON of item key to code (`shuttle`, `waste`, `waste-simulation`, `airport`, `live-map`, `fleet-safety`, `maintenance`, `deck-school-bus`, `deck-shuttle`, `deck-waste`, `brochure-zenbus`, `brochure-waste`, `reseller`, `all`).
+- `SALES_KIT_PASSCODES_MORE`: same format, for items added later (`man-down`). If both name an item, `SALES_KIT_PASSCODES` wins.
 - `SALES_KIT_SECRET`: signs the unlock cookies.
 
-To change or revoke a code, edit `SALES_KIT_PASSCODES` in Vercel and redeploy. Anyone who used the old code is asked again.
+To change or revoke a code, edit `SALES_KIT_PASSCODES` (or `SALES_KIT_PASSCODES_MORE` for Man Down) in Vercel and redeploy. Anyone who used the old code is asked again.
 

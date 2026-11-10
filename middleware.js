@@ -5,6 +5,7 @@
  *   SALES_KIT_PASSCODES  JSON, e.g. {"shuttle":"...","deck-waste":"..."}
  *                        "all" = ZenduIT team password: every item and the home page
  *                        "reseller" = reseller password: every item, not the home page
+ *   SALES_KIT_PASSCODES_MORE  same format, for items added later (e.g. {"man-down":"..."})
  *   SALES_KIT_SECRET     random string used to sign the "unlocked" cookies
  * Changing a code locks out everyone who used the old one. Redeploy after changing a variable.
  */
@@ -19,6 +20,7 @@ const ITEMS = {
   'shuttle':          ['School & Shuttle demo', ['/shuttle', '/zenbus-shuttle-prototype']],
   'waste':            ['Waste demo', ['/waste', '/zenduwork-waste-prototype']],
   'waste-simulation': ['Waste live simulation', ['/waste-simulation', '/zenduwork-waste-simulation']],
+  'man-down':         ['Man Down simulation', ['/man-down', '/zenduone-man-down-simulation']],
   'airport':          ['Airport demo', ['/airport', '/zenduone-airport-prototype']],
   'live-map':         ['Live Map demo', ['/live-map', '/zenduone-live-map-prototype']],
   'fleet-safety':     ['Fleet safety demo', ['/fleet-safety', '/zenduone-fleet-safety-prototype', '/driver-safety', '/zenduone-driver-safety-prototype']],
@@ -37,7 +39,9 @@ function itemFor(pathname) {
 }
 
 function codes() {
-  try { return JSON.parse(process.env.SALES_KIT_PASSCODES || '{}'); } catch (e) { return {}; }
+  /* SALES_KIT_PASSCODES_MORE holds codes for items added later; the main list wins if both name the same item */
+  const read = (v) => { try { return JSON.parse(v || '{}'); } catch (e) { return {}; } };
+  return Object.assign({}, read(process.env.SALES_KIT_PASSCODES_MORE), read(process.env.SALES_KIT_PASSCODES));
 }
 
 const enc = new TextEncoder();
